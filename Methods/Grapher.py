@@ -9,7 +9,7 @@ def GraphTP(data, selected):
     plt.legend()
     plt.show()
 
-def GraphDP(data):
+def GraphDP(data, type1, type2):
     fig = plt.figure()
     i = 0
     for key in data.keys():
@@ -23,7 +23,7 @@ def GraphDP(data):
 
     plt.grid()
     plt.legend()
-    plt.xlabel('amp hours used')
-    plt.ylabel('cell Voltage')
+    plt.xlabel(type1 + ' used')
+    plt.ylabel(type2 + ' Voltage')
     plt.show()
         

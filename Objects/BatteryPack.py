@@ -5,6 +5,8 @@ class BatteryPack:
         self.Cell = cell
         self.cellMass = self.Cell.mass * self.Series * self.Parallel
         self.cellK = self.Cell.k
+
+        self.ampacity = self.Cell.ampacity * self.Parallel
         
         self.minVoltage = self.Series * self.Cell.minVoltage
         self.maxVoltage = self.Series * self.Cell.maxVoltage

@@ -8,7 +8,7 @@ from Objects.cell import Cell
 from Methods.dT import ThermalProfile
 from Methods.Grapher import GraphTP
 from Methods.Grapher import GraphDP
-from Methods.CDprofile import DischargeProfile
+from Methods.CDprofile import CellAhDischargeProfile, PackWhDischargeProfile
 import csv
 
 # global variables
@@ -181,6 +181,42 @@ class GraphWindow(QWidget):
     def SubmitGraph(self):
         GraphTP(data, self.SelectedFields)
 
+class DischargeGraphWindow(QWidget):
+    def __init__(self):
+        super().__init__()
+        self.MainLayout = QVBoxLayout()
+        
+        self.CellAh = QPushButton('Cell Voltage(amp hours)')
+        self.CellAh.clicked.connect(self.GraphCellAh)
+        self.MainLayout.addWidget(self.CellAh)
+
+        self.BatteryPackWh = QPushButton('Pack Voltage(watt hours)')
+        self.BatteryPackWh.clicked.connect(self.GraphPackWh)
+        self.MainLayout.addWidget(self.BatteryPackWh)
+
+        self.setLayout(self.MainLayout)
+
+    def GraphCellAh(self):
+        global data
+        global cell
+
+        cell = self.cells[self.cellNames.index(self.SelectedCell.currentText())]
+        data = CellAhDischargeProfile(cell, T0)
+        GraphDP(data, 'amp hours', 'Cell')
+
+    def GraphPackWh(self):
+        global data
+        global cell
+        global batteryPack
+
+        
+        cell = self.cells[self.cellNames.index(self.SelectedCell.currentText())]
+        batteryPack = BatteryPack(self.confs[self.confNames.index(self.SelectedConfig.currentText())][0],
+                                      self.confs[self.confNames.index(self.SelectedConfig.currentText())][1],
+                                      cell)
+        data = PackWhDischargeProfile(batteryPack, T0)
+        GraphDP(data, 'watt hours', 'Pack')
+
 class Window(QWidget):
     
     def __init__(self):
@@ -233,10 +269,10 @@ class Window(QWidget):
         self.ThermalProfile.clicked.connect(self.RunThermalProfile)
         self.ActionLayout.addWidget(self.ThermalProfile)
 
-        self.CellDischargeProfile = QPushButton('Run Cell Discharge Profile')
+        self.CellDischargeProfile = QPushButton('Run Discharge Profile')
         self.CellDischargeProfile.clicked.connect(self.RunDischargeProfile)
         self.ActionLayout.addWidget(self.CellDischargeProfile)
-        
+
         self.MainLayout.addLayout(self.TopLayout)
         self.MainLayout.addLayout(self.ActionLayout)
 
@@ -323,12 +359,16 @@ class Window(QWidget):
         self.GraphWindow.show()
     
     def RunDischargeProfile(self):
-        global data
-        global cell
+        self.DischargeGraphWindow = DischargeGraphWindow()
 
-        cell = self.cells[self.cellNames.index(self.SelectedCell.currentText())]
-        data = DischargeProfile(cell)
-        GraphDP(data)
+        self.DischargeGraphWindow.cells = self.cells
+        self.DischargeGraphWindow.cellNames = self.cellNames
+        self.DischargeGraphWindow.SelectedCell = self.SelectedCell
+        self.DischargeGraphWindow.confs = self.confs
+        self.DischargeGraphWindow.confNames = self.confNames
+        self.DischargeGraphWindow.SelectedConfig = self.SelectedConfig
+
+        self.DischargeGraphWindow.show()
         
 
 if __name__ == "__main__":
