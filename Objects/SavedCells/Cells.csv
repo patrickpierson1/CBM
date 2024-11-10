@@ -1,5 +1,5 @@
 name,mass,resistance,k,ampacity,maxVoltage,minVoltage,nomVoltage,maxCrate
-Samsung 50s,0.07,0.013,700,5.0,4.2,2.5,3.5,9
+Samsung 50s,0.07,0.013,700,5.0,4.2,2.5,3.6,9
 Molicel p42A,0.07,0.016,700.0,4.2,4.2,2.5,3.6,10
 Molicel p50B,0.07,0.008,700.0,5.0,4.2,2.5,3.6,12
 Melasta-22ah,0.355,0.001,700.0,22.0,4.2,2.5,3.7,10

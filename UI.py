@@ -8,14 +8,14 @@ from Objects.cell import Cell
 from Methods.dT import ThermalProfile
 from Methods.Grapher import GraphTP
 from Methods.Grapher import GraphDP
-from Methods.CDprofile import CellAhDischargeProfile, PackWhDischargeProfile
+from Methods.CDprofile import CellAhDischargeProfile, CellWhDischargeProfile, PackWhDischargeProfile
 import csv
 
 # global variables
 cell = None
 batteryPack = None
 T0 = 20.0
-soc = 65
+soc = 52
 
 data = {}
 continuous = False
@@ -190,6 +190,10 @@ class DischargeGraphWindow(QWidget):
         self.CellAh.clicked.connect(self.GraphCellAh)
         self.MainLayout.addWidget(self.CellAh)
 
+        self.CellWh = QPushButton('Cell Voltage(watt hours)')
+        self.CellWh.clicked.connect(self.GraphCellWh)
+        self.MainLayout.addWidget(self.CellWh)
+
         self.BatteryPackWh = QPushButton('Pack Voltage(watt hours)')
         self.BatteryPackWh.clicked.connect(self.GraphPackWh)
         self.MainLayout.addWidget(self.BatteryPackWh)
@@ -203,6 +207,14 @@ class DischargeGraphWindow(QWidget):
         cell = self.cells[self.cellNames.index(self.SelectedCell.currentText())]
         data = CellAhDischargeProfile(cell, T0)
         GraphDP(data, 'amp hours', 'Cell')
+    
+    def GraphCellWh(self):
+        global data
+        global cell
+
+        cell = self.cells[self.cellNames.index(self.SelectedCell.currentText())]
+        data = CellWhDischargeProfile(cell, T0)
+        GraphDP(data, 'watt hours', 'Cell')
 
     def GraphPackWh(self):
         global data

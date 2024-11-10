@@ -22,8 +22,6 @@ def GraphDP(data, type1, type2):
         i += 1
 
     plt.grid()
-    plt.legend()
     plt.xlabel(type1 + ' used')
     plt.ylabel(type2 + ' Voltage')
-    plt.show()
-        
+    plt.show()      

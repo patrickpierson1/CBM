@@ -56,7 +56,7 @@ def ThermalProfile(T0, batteryPack, cont, stateOfCharge, fileName):
             loss = ((I ** 2) * (R))
             totalLoss += loss
             wh += (loss) / 3600
-            T += ((loss) / (batteryPack.cellMass * batteryPack.cellK)) * 1.55
+            T += ((loss) / (batteryPack.cellMass * batteryPack.cellK))
 
             if soc == 0:
                 print('Dropped below minimum capacity')
