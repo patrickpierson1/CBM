@@ -1,3 +1,4 @@
+
 class BatteryPack:
     def __init__(self, series, parallel, cell):
         self.Series = series
@@ -5,6 +6,8 @@ class BatteryPack:
         self.Cell = cell
         self.cellMass = self.Cell.mass * self.Series * self.Parallel
         self.cellK = self.Cell.k
+
+        self.RConnections = 0.0022 * self.Series / self.Parallel
 
         self.ampacity = self.Cell.ampacity * self.Parallel
         
@@ -16,7 +19,7 @@ class BatteryPack:
     
 
     def CurrentResistance(self, wh):
-        return (self.Cell.R(wh / (self.Series * self.Parallel)) * self.Series / self.Parallel)
+        return (self.Cell.R(wh / (self.Series * self.Parallel)) * self.Series / self.Parallel) + self.RConnections
     
     def CurrentVoltage(self, wh):
         return self.Series * self.Cell.V((wh / (self.Series * self.Parallel)))

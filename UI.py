@@ -6,8 +6,8 @@ import sys
 from Objects.BatteryPack import BatteryPack
 from Objects.cell import Cell
 from Methods.dT import ThermalProfile
-from Methods.Grapher import GraphTP
-from Methods.Grapher import GraphDP
+from Methods.Vsoc import Vsoc
+from Methods.Grapher import GraphTP, GraphDP, GraphVsoc
 from Methods.CDprofile import CellAhDischargeProfile, CellWhDischargeProfile, PackWhDischargeProfile
 import csv
 
@@ -281,9 +281,13 @@ class Window(QWidget):
         self.ThermalProfile.clicked.connect(self.RunThermalProfile)
         self.ActionLayout.addWidget(self.ThermalProfile)
 
-        self.CellDischargeProfile = QPushButton('Run Discharge Profile')
-        self.CellDischargeProfile.clicked.connect(self.RunDischargeProfile)
-        self.ActionLayout.addWidget(self.CellDischargeProfile)
+        self.DischargeProfile = QPushButton('Run Discharge Profile')
+        self.DischargeProfile.clicked.connect(self.RunDischargeProfile)
+        self.ActionLayout.addWidget(self.DischargeProfile)
+
+        self.Vsoc = QPushButton('Voltage vs SOC')
+        self.Vsoc.clicked.connect(self.RunVsoc)
+        self.ActionLayout.addWidget(self.Vsoc)
 
         self.MainLayout.addLayout(self.TopLayout)
         self.MainLayout.addLayout(self.ActionLayout)
@@ -381,7 +385,20 @@ class Window(QWidget):
         self.DischargeGraphWindow.SelectedConfig = self.SelectedConfig
 
         self.DischargeGraphWindow.show()
+
+    def RunVsoc(self):
+        global data
+        global cell
+        global batteryPack
+        cell = self.cells[self.cellNames.index(self.SelectedCell.currentText())]
         
+        batteryPack = BatteryPack(self.confs[self.confNames.index(self.SelectedConfig.currentText())][0],
+                                      self.confs[self.confNames.index(self.SelectedConfig.currentText())][1],
+                                      cell)
+        data = Vsoc(batteryPack)
+        
+        GraphVsoc(data)
+
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)

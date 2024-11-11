@@ -22,6 +22,15 @@ def GraphDP(data, type1, type2):
         i += 1
 
     plt.grid()
+    plt.legend()
     plt.xlabel(type1 + ' used')
     plt.ylabel(type2 + ' Voltage')
-    plt.show()      
+    plt.show()   
+
+def GraphVsoc(data):
+    fig = plt.figure()
+    plt.plot(data['State of Charge'], data['OC Voltage'])
+    plt.grid()
+    plt.ylabel('Open Circuit Voltage')
+    plt.xlabel('State of Charge')
+    plt.show()   
