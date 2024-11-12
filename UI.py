@@ -255,7 +255,6 @@ class DischargeGraphWindow(QWidget):
         GraphDP(data, 'watt hours', 'Pack', title)
 
 class Window(QWidget):
-    
     def __init__(self):
         super().__init__()
 
