@@ -111,12 +111,5 @@ def ThermalProfile(T0, batteryPack, cont, stateOfCharge, fileName):
             break
         
     data['laps'] = laps
-
-    print('end Voltage: ' + str(round(V, 2)))
-    print('kWh used: ' + str(round(wh / 1000, 2)))
-    print('Wh loss: ' + str(round(totalLoss / 3600, 2)))
-    print('minutes: ' + str(round(t / 60, 2)))
-    print('Laps: ' + str(laps))
-    print('end Temp: ' + str(round(T, 2)))
-    print()
+    
     return data
