@@ -7,8 +7,14 @@ from Objects.BatteryPack import BatteryPack
 from Objects.cell import Cell
 from Methods.dT import ThermalProfile
 from Methods.Vsoc import Vsoc
-from Methods.Grapher import GraphTP, GraphDP, GraphVsoc
-from Methods.CDprofile import CellAhDischargeProfile, CellWhDischargeProfile, PackWhDischargeProfile
+from Methods.MaxPkwh import MaxPkw
+from Methods.Grapher import (GraphTP, 
+                            GraphDP, 
+                            GraphVsoc,
+                            GraphPkwh)
+from Methods.CDprofile import (CellAhDischargeProfile,
+                                CellWhDischargeProfile, 
+                                PackWhDischargeProfile,)
 import csv
 
 # global variables
@@ -151,6 +157,19 @@ class Setup(QWidget):
         self.inputCrate= QLineEdit(str(cell.maxCrate))
         self.CellLayout.addWidget(self.inputCrate)
 
+class ThermalDataWindow(QWidget):
+    def __init__(self):
+        super().__init__()
+        self.MainLayout = QVBoxLayout()
+        self.MainLayout.addWidget(QLabel('end Voltage: ' + str(round(data['VoltageData'][-1], 2))))
+        self.MainLayout.addWidget(QLabel('kWh used: ' + str(round(data['WattHourData'][-1] / 1000, 2))))
+        self.MainLayout.addWidget(QLabel('Wh loss: ' + str(round(sum(data['LossData']), 2))))
+        self.MainLayout.addWidget(QLabel('minutes: ' + str(round(data['timeData'][-1] / 60, 2))))
+        self.MainLayout.addWidget(QLabel('laps: ' + str(data['laps'])))
+        self.MainLayout.addWidget(QLabel('end Temp ' + str(round(data['TempData'][-1], 2))))
+
+        self.setLayout(self.MainLayout)
+
 class GraphWindow(QWidget):
     def __init__(self):
         super().__init__()
@@ -159,7 +178,7 @@ class GraphWindow(QWidget):
         self.SelectedFields = []
         for key in data.keys():
             if not(key == 'timeData'):
-                if not(key == 'lap'):
+                if not(key == 'laps'):
                     CurrentField = QCheckBox(key)
                     CurrentField.name = key
                     CurrentField.stateChanged.connect(self.selected)
@@ -179,7 +198,10 @@ class GraphWindow(QWidget):
             self.SelectedFields.remove(cur.name)
 
     def SubmitGraph(self):
-        GraphTP(data, self.SelectedFields)
+        title = self.SelectedCell.currentText() + ' - ' + self.SelectedConfig.currentText() + ' - ' +  self.FileName
+        self.ThermalDataWindow = ThermalDataWindow()
+        self.ThermalDataWindow.show()
+        GraphTP(data, self.SelectedFields, title)
 
 class DischargeGraphWindow(QWidget):
     def __init__(self):
@@ -206,7 +228,8 @@ class DischargeGraphWindow(QWidget):
 
         cell = self.cells[self.cellNames.index(self.SelectedCell.currentText())]
         data = CellAhDischargeProfile(cell, T0)
-        GraphDP(data, 'amp hours', 'Cell')
+        title = self.SelectedCell.currentText()
+        GraphDP(data, 'amp hours', 'Cell', title)
     
     def GraphCellWh(self):
         global data
@@ -214,7 +237,8 @@ class DischargeGraphWindow(QWidget):
 
         cell = self.cells[self.cellNames.index(self.SelectedCell.currentText())]
         data = CellWhDischargeProfile(cell, T0)
-        GraphDP(data, 'watt hours', 'Cell')
+        title = self.SelectedCell.currentText()
+        GraphDP(data, 'watt hours', 'Cell', title)
 
     def GraphPackWh(self):
         global data
@@ -227,7 +251,8 @@ class DischargeGraphWindow(QWidget):
                                       self.confs[self.confNames.index(self.SelectedConfig.currentText())][1],
                                       cell)
         data = PackWhDischargeProfile(batteryPack, T0)
-        GraphDP(data, 'watt hours', 'Pack')
+        title = self.SelectedCell.currentText() + ' - ' + self.SelectedConfig.currentText()
+        GraphDP(data, 'watt hours', 'Pack', title)
 
 class Window(QWidget):
     
@@ -288,6 +313,10 @@ class Window(QWidget):
         self.Vsoc = QPushButton('Voltage vs SOC')
         self.Vsoc.clicked.connect(self.RunVsoc)
         self.ActionLayout.addWidget(self.Vsoc)
+
+        self.Pkwh = QPushButton('Max Power vs wh Consumed')
+        self.Pkwh.clicked.connect(self.RunPkwh)
+        self.ActionLayout.addWidget(self.Pkwh)
 
         self.MainLayout.addLayout(self.TopLayout)
         self.MainLayout.addLayout(self.ActionLayout)
@@ -372,6 +401,9 @@ class Window(QWidget):
                                       cell)
         data = ThermalProfile(T0, batteryPack, continuous, soc, self.InputFile.currentText())
         self.GraphWindow = GraphWindow()
+        self.GraphWindow.SelectedCell = self.SelectedCell
+        self.GraphWindow.SelectedConfig = self.SelectedConfig
+        self.GraphWindow.FileName = self.InputFile.currentText()
         self.GraphWindow.show()
     
     def RunDischargeProfile(self):
@@ -396,8 +428,22 @@ class Window(QWidget):
                                       self.confs[self.confNames.index(self.SelectedConfig.currentText())][1],
                                       cell)
         data = Vsoc(batteryPack)
+        title = self.SelectedCell.currentText() + ' - ' + self.SelectedConfig.currentText()
         
-        GraphVsoc(data)
+        GraphVsoc(data, title)
+
+    def RunPkwh(self):
+        global data
+        global cell
+        global batteryPack
+        cell = self.cells[self.cellNames.index(self.SelectedCell.currentText())]
+        
+        batteryPack = BatteryPack(self.confs[self.confNames.index(self.SelectedConfig.currentText())][0],
+                                      self.confs[self.confNames.index(self.SelectedConfig.currentText())][1],
+                                      cell)
+        data = MaxPkw(batteryPack)
+        title = self.SelectedCell.currentText() + ' - ' + self.SelectedConfig.currentText()
+        GraphPkwh(data, title)
 
 
 if __name__ == "__main__":

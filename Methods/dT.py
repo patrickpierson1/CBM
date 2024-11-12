@@ -109,6 +109,8 @@ def ThermalProfile(T0, batteryPack, cont, stateOfCharge, fileName):
             reader = csv.DictReader(file)
         else:
             break
+        
+    data['laps'] = laps
 
     print('end Voltage: ' + str(round(V, 2)))
     print('kWh used: ' + str(round(wh / 1000, 2)))

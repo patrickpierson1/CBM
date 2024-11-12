@@ -19,6 +19,7 @@ class BatteryPack:
     
 
     def CurrentResistance(self, wh):
+        # return self.Cell.resistance * self.Series / self.Parallel
         return (self.Cell.R(wh / (self.Series * self.Parallel)) * self.Series / self.Parallel) + self.RConnections
     
     def CurrentVoltage(self, wh):
