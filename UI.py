@@ -163,7 +163,7 @@ class ThermalDataWindow(QWidget):
         self.MainLayout = QVBoxLayout()
         self.MainLayout.addWidget(QLabel('end Voltage: ' + str(round(data['VoltageData'][-1], 2))))
         self.MainLayout.addWidget(QLabel('kWh used: ' + str(round(data['WattHourData'][-1] / 1000, 2))))
-        self.MainLayout.addWidget(QLabel('Wh loss: ' + str(round(sum(data['LossData']), 2))))
+        self.MainLayout.addWidget(QLabel('Wh loss: ' + str(round(sum(data['LossData']) / 3600, 2))))
         self.MainLayout.addWidget(QLabel('minutes: ' + str(round(data['timeData'][-1] / 60, 2))))
         self.MainLayout.addWidget(QLabel('laps: ' + str(data['laps'])))
         self.MainLayout.addWidget(QLabel('end Temp ' + str(round(data['TempData'][-1], 2))))

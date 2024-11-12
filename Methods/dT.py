@@ -111,5 +111,4 @@ def ThermalProfile(T0, batteryPack, cont, stateOfCharge, fileName):
             break
         
     data['laps'] = laps
-    
     return data
