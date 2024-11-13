@@ -3,6 +3,7 @@ from PyQt6.QtWidgets import *
 from PyQt6.QtGui import QIcon
 
 import sys
+import csv
 from Objects.BatteryPack import BatteryPack
 from Objects.cell import Cell
 from Methods.dT import ThermalProfile
@@ -13,16 +14,14 @@ from Methods.Grapher import (GraphTP,
                             GraphVsoc,
                             GraphPkwh)
 from Methods.CDprofile import (CellAhDischargeProfile,
-                                CellWhDischargeProfile, 
+                                CellWhDischargeProfile,
                                 PackWhDischargeProfile,)
-import csv
 
 # global variables
 cell = None
 batteryPack = None
 T0 = 20.0
-soc = 52
-
+soc = 100
 data = {}
 continuous = False
 
@@ -162,7 +161,7 @@ class ThermalDataWindow(QWidget):
         super().__init__()
         self.MainLayout = QVBoxLayout()
         self.MainLayout.addWidget(QLabel('end Voltage: ' + str(round(data['VoltageData'][-1], 2))))
-        self.MainLayout.addWidget(QLabel('kWh used: ' + str(round(data['WattHourData'][-1] / 1000, 2))))
+        self.MainLayout.addWidget(QLabel('kWh used: ' + str(round(data['Wh used'] / 1000, 2))))
         self.MainLayout.addWidget(QLabel('Wh loss: ' + str(round(sum(data['LossData']) / 3600, 2))))
         self.MainLayout.addWidget(QLabel('minutes: ' + str(round(data['timeData'][-1] / 60, 2))))
         self.MainLayout.addWidget(QLabel('laps: ' + str(data['laps'])))
@@ -173,16 +172,17 @@ class ThermalDataWindow(QWidget):
 class GraphWindow(QWidget):
     def __init__(self):
         super().__init__()
+        self.ThermalDataWindow = ThermalDataWindow()
+        self.ThermalDataWindow.show()
         self.MainLayout = QVBoxLayout()
         
         self.SelectedFields = []
         for key in data.keys():
-            if not(key == 'timeData'):
-                if not(key == 'laps'):
-                    CurrentField = QCheckBox(key)
-                    CurrentField.name = key
-                    CurrentField.stateChanged.connect(self.selected)
-                    self.MainLayout.addWidget(CurrentField)
+            if (key != 'timeData') and (key != 'laps') and (key != 'Wh used'):
+                CurrentField = QCheckBox(key)
+                CurrentField.name = key
+                CurrentField.stateChanged.connect(self.selected)
+                self.MainLayout.addWidget(CurrentField)
                     
         self.Submit = QPushButton('Graph Selected Fields')
         self.Submit.clicked.connect(self.SubmitGraph)
@@ -199,8 +199,6 @@ class GraphWindow(QWidget):
 
     def SubmitGraph(self):
         title = self.SelectedCell.currentText() + ' - ' + self.SelectedConfig.currentText() + ' - ' +  self.FileName
-        self.ThermalDataWindow = ThermalDataWindow()
-        self.ThermalDataWindow.show()
         GraphTP(data, self.SelectedFields, title)
 
 class DischargeGraphWindow(QWidget):

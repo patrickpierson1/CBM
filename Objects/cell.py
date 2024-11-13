@@ -68,8 +68,8 @@ class Cell:
                 + (self.D))
         
     def R(self, x):
-        q = 5
-        p = 1.3
+        q = 50
+        p = 2
         return (self.resistance + 
-                ((1.2 * self.resistance - self.resistance) * ((1 - (x / self.capacity))**q) * np.cos(x)) -
+                (((1.4 * self.resistance) - self.resistance) * ((1 - (x / self.capacity))**q)) -
                 ((self.resistance - (2 * self.resistance)) * ((x / self.capacity)**p))) 

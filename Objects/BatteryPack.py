@@ -7,7 +7,7 @@ class BatteryPack:
         self.cellMass = self.Cell.mass * self.Series * self.Parallel
         self.cellK = self.Cell.k
 
-        self.RConnections = 0.0022 * self.Series / self.Parallel
+        self.RConnections = 0.003 * self.Series / self.Parallel
 
         self.ampacity = self.Cell.ampacity * self.Parallel
         

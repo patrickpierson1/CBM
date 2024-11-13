@@ -11,7 +11,7 @@ def ThermalProfile(T0, batteryPack, cont, stateOfCharge, fileName):
     T = T0
     totalLoss = 0
     soc = stateOfCharge
-    wh = 0.01 * (100- soc) * batteryPack.Capacity
+    wh = 0.01 * (100 - soc) * batteryPack.Capacity
     
     keys = []
 
@@ -110,5 +110,7 @@ def ThermalProfile(T0, batteryPack, cont, stateOfCharge, fileName):
         else:
             break
         
+    print(wh - (0.01 * (100 - stateOfCharge) * batteryPack.Capacity))
+    data['Wh used'] = wh - (0.01 * (100 - stateOfCharge) * batteryPack.Capacity)
     data['laps'] = laps
     return data
