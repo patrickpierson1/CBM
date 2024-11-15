@@ -67,9 +67,5 @@ class Cell:
                 + (self.K * (wh))
                 + (self.D))
         
-    def R(self, x):
-        q = 50
-        p = 2
-        return (self.resistance + 
-                (((1.4 * self.resistance) - self.resistance) * ((1 - (x / self.capacity))**q)) -
-                ((self.resistance - (2 * self.resistance)) * ((x / self.capacity)**p))) 
+    def R(self, wh):
+        return self.resistance        

@@ -21,7 +21,7 @@ from Methods.CDprofile import (CellAhDischargeProfile,
 cell = None
 batteryPack = None
 T0 = 20.0
-soc = 100
+soc = 52
 data = {}
 continuous = False
 
