@@ -37,11 +37,11 @@ def ThermalProfile(T0, batteryPack, cont, stateOfCharge, fileName):
         data['realTempData 2'] = []
     if keys.__contains__('V'):
         data['realVoltageData'] = []
-        data['Current delta'] = []
-        data['Voltage delta'] = []
-        data['realCurrent'] = []
-        data['realResistance'] = []
-        data['realVoltageDrop'] = []
+        # data['Current delta'] = []
+        # data['Voltage delta'] = []
+        # data['realCurrent'] = []
+        # data['realResistance'] = []
+        # data['realVoltageDrop'] = []
 
     end = False
 
@@ -52,7 +52,6 @@ def ThermalProfile(T0, batteryPack, cont, stateOfCharge, fileName):
             t += 1
             P = (float(row['kW']) * 1000)
             R = batteryPack.CurrentResistance(wh)
-            # R = 1
             Voc = batteryPack.CurrentVoltage(wh)     
             I = ((-Voc) + math.sqrt(((-Voc) ** 2) - (4 * -R * -(P)))) / (2 * -R)
             Vdrop = I * R
@@ -94,23 +93,24 @@ def ThermalProfile(T0, batteryPack, cont, stateOfCharge, fileName):
                 data['realTempData 2'].append((float(row['t2']) - 32) * 5 / 9)
             if keys.__contains__('V'):
                 rV = float(row['V'])
-                rI = P / rV
-                rVdrop = math.fabs(Voc - rV)
-                if I == 0:
-                    rR = 0
-                else:
-                    rR = rVdrop / rI
-                
+                data['realVoltageData'].append(rV)
+                # rI = P / rV
+                # rVdrop = math.fabs(Voc - rV)
+                # if I == 0:
+                #     rR = 0
                 # else:
                 #     rR = rVdrop / rI
-                # if rR > 1 or rR < 0:
-                #     rR = 0
-                data['realVoltageData'].append(rV)
-                data['Voltage delta'].append(rV - V)
-                data['Current delta'].append(rI - I)
-                data['realCurrent'].append(rI)
-                data['realResistance'].append(rR)
-                data['realVoltageDrop'].append(rVdrop)
+                
+                # # else:
+                # #     rR = rVdrop / rI
+                # # if rR > 1 or rR < 0:
+                # #     rR = 0
+                # data['realVoltageData'].append(rV)
+                # data['Voltage delta'].append(rV - V)
+                # data['Current delta'].append(rI - I)
+                # data['realCurrent'].append(rI)
+                # data['realResistance'].append(rR)
+                # data['realVoltageDrop'].append(rVdrop)
 
             data['VoltageData'].append(V)
             data['Voltage(no drop)Data'].append(Voc)

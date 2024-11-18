@@ -4,6 +4,7 @@ def MaxPkw(batteryPack):
 
     data = {}
     data['Max Power (kW)'] = []
+    data['State of charge (%)'] = []
     data['kWh consumed'] = []
     data['SOC'] = []
 
@@ -26,7 +27,8 @@ def MaxPkw(batteryPack):
             foundDischargeLimit = True
         
         data['Max Power (kW)'].append(P / 1000)
-        data['kWh consumed'].append(wh / 1000)
+        # data['kWh consumed'].append(wh / 1000)
+        data['State of charge (%)'].append(((batteryPack.Capacity - wh) / batteryPack.Capacity) * 100)
 
         if V <= batteryPack.minVoltage:
             break

@@ -5,7 +5,7 @@ class BatteryPack:
         self.Parallel = parallel
         self.Cell = cell
         self.cellMass = self.Cell.mass * self.Series * self.Parallel
-        self.cellK = self.Cell.k
+        self.cellK = self.Cell.K
 
         self.RConnections = 0.45
 

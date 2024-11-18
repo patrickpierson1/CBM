@@ -133,7 +133,7 @@ class Setup(QWidget):
         self.CellLayout.addWidget(self.inputResistance)
 
         self.CellLayout.addWidget(QLabel('K'))
-        self.inputK = QLineEdit(str(cell.k))
+        self.inputK = QLineEdit(str(cell.K))
         self.CellLayout.addWidget(self.inputK)
 
         self.CellLayout.addWidget(QLabel('Ampacity'))

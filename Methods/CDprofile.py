@@ -1,7 +1,8 @@
 # discharge profile of a cell with respect to ah consumed
 def CellAhDischargeProfile(cell, T0):
 
-    currents = [0.1, 1, 5, 10, 20, 30]
+    currents = [0.5, 1, 3, 5, 10, 15, 20, 30]
+    # currents = [0.01]
 
     data = {}
     data['temps'] = []
@@ -18,29 +19,30 @@ def CellAhDischargeProfile(cell, T0):
 
         while True:
             
-            V = cell.V(wh)
+            V = cell.Vah(ah)
             R = cell.R(wh)
             Vdrop = I * R
             V -= Vdrop
             
-            P = V * I
-            wh += P/3600
+            # P = V * I
+            # wh += P/3600
 
             loss = (I**2) * R
 
             ah += I/3600
-            ah += loss / (V * 3600)
-            wh += loss / (3600)
+            # ah += loss / (V * 3600)
+            # wh += loss / (3600)
 
 
             Vdata.append(V)
             ahdata.append(ah)
 
             t += 1
-            T += ((loss) / (cell.mass * cell.k))
+            T += ((loss) / (cell.mass * cell.K))
 
             if V <= cell.minVoltage:
                 break
+
         
         data[str(I)] = (ahdata, Vdata)
         data['temps'].append(T)
@@ -51,7 +53,7 @@ def CellAhDischargeProfile(cell, T0):
 # discharge profile of a cell with respect to ah consumed
 def CellWhDischargeProfile(cell, T0):
 
-    currents = [0.1, 1, 5, 10, 20, 30]
+    currents = [0.5, 1, 3, 5, 10, 15, 20, 30]
 
     data = {}
     data['temps'] = []
@@ -82,7 +84,7 @@ def CellWhDischargeProfile(cell, T0):
             ahdata.append(wh)
 
             t += 1
-            T += ((loss) / (cell.mass * cell.k))
+            T += ((loss) / (cell.mass * cell.K))
 
             if V <= cell.minVoltage:
                 break
