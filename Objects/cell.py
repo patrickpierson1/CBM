@@ -1,8 +1,4 @@
-import numpy as np
 from scipy.integrate import quad
-
-# initial slope condition:
-
 
 class Cell:
     def __init__(self, mass, resistance, k, ampacity, maxVoltage, minVoltage, nomVoltage, maxCrate):
@@ -24,12 +20,12 @@ class Cell:
     # V(wh) = i wh^3 + j wh^2 + kwh + d
     def V(self, wh):
         d = self.maxVoltage
-        k = self.k()
-        j = self.j(k)
-        i = self.i(j, k)
-        return ((i * (wh ** 3))
-                + (j * (wh **2))
-                + (k * (wh))
+        c = self.c(self.capacity)
+        b = self.b(self.capacity)
+        a = self.a(self.capacity)
+        return ((a * (wh ** 3))
+                + (b * (wh **2))
+                + (c * (wh))
                 + (d))
     
     # constant resistance
@@ -39,43 +35,24 @@ class Cell:
     # V(ah) = a ah^3 + b ah^2 + c ah + d
     def Vah(self, ah):
         d = self.maxVoltage
-        c = self.c()
-        b = self.b()
-        a = self.a(b)
+        c = self.c(self.ampacity)
+        b = self.b(self.ampacity)
+        a = self.a(self.ampacity)
         return ((a * (ah ** 3))
                 + (b * (ah ** 2))
                 + (c * (ah))
                 + (d))
 
     # coeficient equations
-    def c(self):
-        return - 0.5 * self.maxVoltage / self.ampacity 
+    def c(self, m):
+        return (self.minVoltage - self.maxVoltage) / m
     
-    def b(self):
-        c = self.c()
-        return (((3 * ((4 * self.nomVoltage)
-                    - (3 * self.maxVoltage)
-                    - (self.minVoltage))) 
-                    / (self.ampacity ** 2))
-                - ((3 * c) / self.ampacity))
+    def b(self, m):
+        return (6 / (m ** 2)) * ((2 * self.nomVoltage) 
+                                              - self.maxVoltage 
+                                              - self.minVoltage)
         
-    def a(self, b):
-        c = self.c()
-        return (((4 * (self.nomVoltage - self.maxVoltage)) / (self.ampacity ** 3))
-            - ((2 * c) / (self.ampacity ** 2))
-            - ((4 * b) / (3 * self.ampacity)))
-    
-    def k(self):
-        return - 0.5 * self.maxVoltage / self.capacity
-        
-    def j(self, k):
-        return (((3 * ((4 * self.nomVoltage)
-                            - (3 * self.maxVoltage)
-                            - (self.minVoltage))) 
-                        / (self.capacity ** 2))
-                    - ((3 * k) / self.capacity))
-            
-    def i(self, j, k):
-        return (((4 * (self.nomVoltage - self.maxVoltage)) / (self.capacity ** 3))
-            - ((2 * k) / (self.capacity ** 2))
-            - ((4 * j) / (3 * self.capacity)))       
+    def a(self, m):
+        return (-6 / (m ** 3)) * ((2 * self.nomVoltage) 
+                                              - self.maxVoltage 
+                                              - self.minVoltage)

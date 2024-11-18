@@ -40,14 +40,14 @@ def GraphVsoc(data, title):
 
 def GraphPkwh(data, title):
     fig = plt.figure()
-    plt.plot(data['State of charge (%)'], data['Max Power (kW)'])
+    plt.plot(data['State of charge (%)'], data['Max Power (kW)'], label = 'Max Power (kW)')
+    # plt.plot(data['State of charge (%)'], data['Max Current (Amps)'], label = 'Max Current (Amps)')
     plt.gca().invert_xaxis()
     
     if data.keys().__contains__('Discharge Limit'):
         plt.hlines(data['Discharge Limit'], 0, 100, color = 'red', label = 'Max discharge limit', linestyle = 'dashed')
 
     plt.xlabel('State of charge (%)')
-    plt.ylabel('Max kW achivable')
     plt.title(title)
     plt.grid()
     plt.legend()
