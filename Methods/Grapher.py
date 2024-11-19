@@ -1,13 +1,36 @@
 import matplotlib.pyplot as plt
 
 def GraphTP(data, selected, title):
-    fig = plt.figure()
+    # fig = plt.figure()
+    # for key in selected:
+    #     plt.plot(data['timeData'], data[key], label = key)
+
+    # plt.grid()
+    # plt.legend()
+    # plt.title(title)
+    # plt.show()
+
+
+    fig, ax = plt.subplots(1, 1, figsize=(8, 4))
+
     for key in selected:
         plt.plot(data['timeData'], data[key], label = key)
 
-    plt.grid()
+    my_text = ('end Voltage: ' + str(round(data['VoltageData'][-1], 2)) + '\n' +
+               'kWh used: ' + str(round(data['Wh used'] / 1000, 2)) + '\n' +
+               'Wh loss: ' + str(round(sum(data['LossData']) / 3600, 2)) + '\n' +
+               'minutes: ' + str(round(data['timeData'][-1] / 60, 2)) + '\n' +
+               'laps: ' + str(data['laps']) + '\n' +
+               'end Temp ' + str(round(data['TempData'][-1], 2)))
+
+    # my_text += fr'$\mu=${mu:.3f}' + '\n' + fr'$\sigma=${sigma:.3f}'
+
+    
+    props = dict(boxstyle='round', facecolor='grey', alpha=0.15)  # bbox features
+    ax.text(1.03, 0.98, my_text, transform=ax.transAxes, fontsize=12, verticalalignment='top', bbox=props)
+    plt.tight_layout()
     plt.legend()
-    plt.title(title)
+    plt.grid()
     plt.show()
 
 def GraphDP(data, type1, type2, title):

@@ -48,8 +48,8 @@ def MaxCurrent(wh, batteryPack):
     R = batteryPack.CurrentResistance(wh)
     I = batteryPack.maxDischarge
 
-    if V - (I * R) > batteryPack.minVoltage * 1.05:
+    if V - (I * R) > batteryPack.minVoltage * 1.01:
         return I
     else:
-        Vdrop = V - (batteryPack.minVoltage * 1.05)
+        Vdrop = V - (batteryPack.minVoltage * 1.01)
         return (Vdrop / R)

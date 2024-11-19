@@ -1,7 +1,7 @@
 # discharge profile of a cell with respect to ah consumed
 def CellAhDischargeProfile(cell, T0):
 
-    currents = [0.5, 1, 3, 5, 10, 15, 20, 30]
+    currents = [0.5, 1, 3, 5, 10, 15, 20]
     # currents = [0.01]
 
     data = {}
@@ -53,7 +53,7 @@ def CellAhDischargeProfile(cell, T0):
 # discharge profile of a cell with respect to ah consumed
 def CellWhDischargeProfile(cell, T0):
 
-    currents = [0.5, 1, 3, 5, 10, 15, 20, 30]
+    currents = [0.5, 1, 3, 5, 10, 15, 20]
 
     data = {}
     data['temps'] = []

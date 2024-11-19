@@ -21,7 +21,7 @@ from Methods.CDprofile import (CellAhDischargeProfile,
 cell = None
 batteryPack = None
 T0 = 20.0
-soc = 52
+soc = 100
 data = {}
 continuous = False
 
@@ -156,24 +156,9 @@ class Setup(QWidget):
         self.inputCrate= QLineEdit(str(cell.maxCrate))
         self.CellLayout.addWidget(self.inputCrate)
 
-class ThermalDataWindow(QWidget):
-    def __init__(self):
-        super().__init__()
-        self.MainLayout = QVBoxLayout()
-        self.MainLayout.addWidget(QLabel('end Voltage: ' + str(round(data['VoltageData'][-1], 2))))
-        self.MainLayout.addWidget(QLabel('kWh used: ' + str(round(data['Wh used'] / 1000, 2))))
-        self.MainLayout.addWidget(QLabel('Wh loss: ' + str(round(sum(data['LossData']) / 3600, 2))))
-        self.MainLayout.addWidget(QLabel('minutes: ' + str(round(data['timeData'][-1] / 60, 2))))
-        self.MainLayout.addWidget(QLabel('laps: ' + str(data['laps'])))
-        self.MainLayout.addWidget(QLabel('end Temp ' + str(round(data['TempData'][-1], 2))))
-
-        self.setLayout(self.MainLayout)
-
 class GraphWindow(QWidget):
     def __init__(self):
         super().__init__()
-        self.ThermalDataWindow = ThermalDataWindow()
-        self.ThermalDataWindow.show()
         self.MainLayout = QVBoxLayout()
         
         self.SelectedFields = []
@@ -252,6 +237,20 @@ class DischargeGraphWindow(QWidget):
         title = self.SelectedCell.currentText() + ' - ' + self.SelectedConfig.currentText()
         GraphDP(data, 'watt hours', 'Pack', title)
 
+class PackData(QWidget):
+    def __init__(self):
+        super().__init__()
+        self.MainLayout = QVBoxLayout()
+
+        self.MainLayout.addWidget(QLabel('Cell Mass: ' + str(round(batteryPack.cellMass, 2)) + ' Kg'))
+        self.MainLayout.addWidget(QLabel('Max Voltage: ' + str(round(batteryPack.maxVoltage, 2)) + ' Volts'))
+        self.MainLayout.addWidget(QLabel('Nominal Voltage: ' + str(round(batteryPack.nomVoltage, 2)) + ' Volts'))
+        self.MainLayout.addWidget(QLabel('Min Voltage: ' + str(round(batteryPack.minVoltage, 2)) + ' Volts'))
+        self.MainLayout.addWidget(QLabel('Capacity: ' + str(round(batteryPack.Capacity, 2)) + ' kWh'))
+        self.MainLayout.addWidget(QLabel('Resistance: ' + str(round(batteryPack.CurrentResistance(0), 2)) + ' ohms'))
+
+        self.setLayout(self.MainLayout)
+
 class Window(QWidget):
     def __init__(self):
         super().__init__()
@@ -296,7 +295,7 @@ class Window(QWidget):
         
         self.RefreshButton = QPushButton()
         self.RefreshButton.clicked.connect(self.Refresh)
-        self.RefreshButton.setIcon(QIcon('Objects/Refresh-Logo.png'))
+        self.RefreshButton.setIcon(QIcon('Objects/Images/Refresh-Logo.png'))
         self.TopLayout.addWidget(self.RefreshButton)
 
         self.ThermalProfile = QPushButton('Run Thermal Profile')
@@ -314,6 +313,10 @@ class Window(QWidget):
         self.Pkwh = QPushButton('Max Power vs wh Consumed')
         self.Pkwh.clicked.connect(self.RunPkwh)
         self.ActionLayout.addWidget(self.Pkwh)
+
+        self.PackData = QPushButton('Display Pack Data')
+        self.PackData.clicked.connect(self.DisplayPackData)
+        self.ActionLayout.addWidget(self.PackData)
 
         self.MainLayout.addLayout(self.TopLayout)
         self.MainLayout.addLayout(self.ActionLayout)
@@ -441,6 +444,17 @@ class Window(QWidget):
         data = MaxPkw(batteryPack)
         title = self.SelectedCell.currentText() + ' - ' + self.SelectedConfig.currentText()
         GraphPkwh(data, title)
+
+    def DisplayPackData(self):
+        global cell
+        global batteryPack
+        cell = self.cells[self.cellNames.index(self.SelectedCell.currentText())]
+        
+        batteryPack = BatteryPack(self.confs[self.confNames.index(self.SelectedConfig.currentText())][0],
+                                      self.confs[self.confNames.index(self.SelectedConfig.currentText())][1],
+                                      cell)
+        self.PackDataWindow = PackData()
+        self.PackDataWindow.show()
 
 
 if __name__ == "__main__":
