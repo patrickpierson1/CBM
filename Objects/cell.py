@@ -1,13 +1,14 @@
 from scipy.integrate import quad
 
 class Cell:
-    def __init__(self, mass, resistance, k, ampacity, maxVoltage, minVoltage, nomVoltage, maxCrate):
+    def __init__(self, mass, resistance, k, ampacity, maxVoltage, minVoltage, nomVoltage, maxCrate, contCrate):
 
         self.mass = mass # kg
         self.resistance = resistance # Ohms
         self.K = k # Specific heat: J/(kg T)
         self.ampacity = ampacity # ah
         self.maxCrate = maxCrate
+        self.contCrate = contCrate
 
         self.maxVoltage = maxVoltage
         self.minVoltage = minVoltage

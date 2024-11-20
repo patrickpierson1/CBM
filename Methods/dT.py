@@ -19,24 +19,25 @@ def ThermalProfile(T0, batteryPack, cont, stateOfCharge, fileName):
         keys.append(key)
 
     data = {}
-    data['Voltage(no drop)Data'] = []
-    data['VoltageData'] = []
-    data['TempData'] = []
-    data['CurrentData'] = []
-    data['WattHourData'] = []
-    data['PowerData'] = []
-    data['timeData'] = []
-    data['ResistanceData'] = []
-    data['SOCData'] = []
-    data['LossData'] = []
-    data['VoltageDropData'] = []
+    data['Open Circuit Voltage (V)'] = []
+    data['Voltage (V)'] = []
+    data['Temperature (°C)'] = []
+    data['Current (A)'] = []
+    data['Watt-hours consumed (Wh)'] = []
+    data['Power (kW)'] = []
+    data['time (s)'] = []
+    data['Resistance (ohms)'] = []
+    data['State of Charge (%)'] = []
+    data['Losses (W)'] = []
+    data['Voltage Drop (V)'] = []
 
     if keys.__contains__('t1'):
-        data['realTempData 1'] = []
+        data['real Temperature 1 (°C)'] = []
     if keys.__contains__('t2'):
-        data['realTempData 2'] = []
+        data['real Temperature 2 (°C)'] = []
     if keys.__contains__('V'):
-        data['realVoltageData'] = []
+        data['real Voltage (V)'] = []
+        discrepenncy = []
         # data['Current delta'] = []
         # data['Voltage delta'] = []
         # data['realCurrent'] = []
@@ -59,10 +60,10 @@ def ThermalProfile(T0, batteryPack, cont, stateOfCharge, fileName):
             soc = 100 * (1 - (wh / (batteryPack.Capacity)))
             wh += P / 3600
             loss = ((I ** 2) * (R))
-            totalLoss += loss
+            totalLoss += loss / 3600
             wh += (loss) / 3600
             T += ((loss) / (batteryPack.cellMass * batteryPack.cellK))
-
+            
             if soc == 0:
                 print('Dropped below minimum capacity')
                 end = True
@@ -88,12 +89,13 @@ def ThermalProfile(T0, batteryPack, cont, stateOfCharge, fileName):
                 end = True
                 break
             if keys.__contains__('t1'):
-                data['realTempData 1'].append((float(row['t1']) - 32) * 5 / 9)
+                data['real Temperature 1 (°C)'].append((float(row['t1']) - 32) * 5 / 9)
             if keys.__contains__('t2'):
-                data['realTempData 2'].append((float(row['t2']) - 32) * 5 / 9)
+                data['real Temperature 2 (°C)'].append((float(row['t2']) - 32) * 5 / 9)
             if keys.__contains__('V'):
                 rV = float(row['V'])
-                data['realVoltageData'].append(rV)
+                data['real Voltage (V)'].append(rV)
+                discrepenncy.append((V - rV) / rV)
                 # rI = P / rV
                 # rVdrop = math.fabs(Voc - rV)
                 # if I == 0:
@@ -105,24 +107,24 @@ def ThermalProfile(T0, batteryPack, cont, stateOfCharge, fileName):
                 # #     rR = rVdrop / rI
                 # # if rR > 1 or rR < 0:
                 # #     rR = 0
-                # data['realVoltageData'].append(rV)
+                # data['real Voltage (V)'].append(rV)
                 # data['Voltage delta'].append(rV - V)
                 # data['Current delta'].append(rI - I)
                 # data['realCurrent'].append(rI)
                 # data['realResistance'].append(rR)
                 # data['realVoltageDrop'].append(rVdrop)
 
-            data['VoltageData'].append(V)
-            data['Voltage(no drop)Data'].append(Voc)
-            data['TempData'].append(T)
-            data['timeData'].append(t)
-            data['ResistanceData'].append(R)
-            data['LossData'].append(loss)
-            data['CurrentData'].append(I)
-            data['WattHourData'].append(wh)
-            data['PowerData'].append(P / 1000)
-            data['SOCData'].append(soc)
-            data['VoltageDropData'].append(Vdrop)
+            data['Voltage (V)'].append(V)
+            data['Open Circuit Voltage (V)'].append(Voc)
+            data['Temperature (°C)'].append(T)
+            data['time (s)'].append(t)
+            data['Resistance (ohms)'].append(R)
+            data['Losses (W)'].append(loss)
+            data['Current (A)'].append(I)
+            data['Watt-hours consumed (Wh)'].append(wh)
+            data['Power (kW)'].append(P / 1000)
+            data['State of Charge (%)'].append(soc)
+            data['Voltage Drop (V)'].append(Vdrop)
 
         laps += 1
         if not(end) and (cont):          
@@ -133,5 +135,8 @@ def ThermalProfile(T0, batteryPack, cont, stateOfCharge, fileName):
             break
         
     data['Wh used'] = wh - (0.01 * (100 - stateOfCharge) * batteryPack.Capacity)
+    data['Efficency'] = 100 - (100 * ((totalLoss) / data['Wh used']))
     data['laps'] = laps
+    # if keys.__contains__('V'):
+    #     data['Accuracy'] = 100 - 100 * (sum(discrepenncy) / len(discrepenncy))
     return data

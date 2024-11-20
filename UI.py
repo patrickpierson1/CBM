@@ -63,7 +63,8 @@ class Setup(QWidget):
                             float(self.inputMaxVoltage.text()), 
                             float(self.inputMinVoltage.text()), 
                             float(self.inputNomVoltage.text()),
-                            float(self.inputCrate.text())]
+                            float(self.inputmCrate.text()),
+                            float(self.inputcCrate.text())]
             wrighter.writerow(Cellrow)
             file.close()
 
@@ -153,8 +154,12 @@ class Setup(QWidget):
         self.CellLayout.addWidget(self.inputNomVoltage)
 
         self.CellLayout.addWidget(QLabel('max C rate discharge'))
-        self.inputCrate= QLineEdit(str(cell.maxCrate))
-        self.CellLayout.addWidget(self.inputCrate)
+        self.inputmCrate= QLineEdit(str(cell.maxCrate))
+        self.CellLayout.addWidget(self.inputmCrate)
+
+        self.CellLayout.addWidget(QLabel('continuous C rate discharge'))
+        self.inputcCrate= QLineEdit(str(cell.contCrate))
+        self.CellLayout.addWidget(self.inputcCrate)
 
 class GraphWindow(QWidget):
     def __init__(self):
@@ -163,7 +168,7 @@ class GraphWindow(QWidget):
         
         self.SelectedFields = []
         for key in data.keys():
-            if (key != 'timeData') and (key != 'laps') and (key != 'Wh used'):
+            if (key != 'timeData') and (key != 'laps') and (key != 'Wh used') and (key != 'Efficency'):
                 CurrentField = QCheckBox(key)
                 CurrentField.name = key
                 CurrentField.stateChanged.connect(self.selected)
@@ -237,20 +242,6 @@ class DischargeGraphWindow(QWidget):
         title = self.SelectedCell.currentText() + ' - ' + self.SelectedConfig.currentText()
         GraphDP(data, 'watt hours', 'Pack', title)
 
-class PackData(QWidget):
-    def __init__(self):
-        super().__init__()
-        self.MainLayout = QVBoxLayout()
-
-        self.MainLayout.addWidget(QLabel('Cell Mass: ' + str(round(batteryPack.cellMass, 2)) + ' Kg'))
-        self.MainLayout.addWidget(QLabel('Max Voltage: ' + str(round(batteryPack.maxVoltage, 2)) + ' Volts'))
-        self.MainLayout.addWidget(QLabel('Nominal Voltage: ' + str(round(batteryPack.nomVoltage, 2)) + ' Volts'))
-        self.MainLayout.addWidget(QLabel('Min Voltage: ' + str(round(batteryPack.minVoltage, 2)) + ' Volts'))
-        self.MainLayout.addWidget(QLabel('Capacity: ' + str(round(batteryPack.Capacity, 2)) + ' kWh'))
-        self.MainLayout.addWidget(QLabel('Resistance: ' + str(round(batteryPack.CurrentResistance(0), 2)) + ' ohms'))
-
-        self.setLayout(self.MainLayout)
-
 class Window(QWidget):
     def __init__(self):
         super().__init__()
@@ -314,10 +305,6 @@ class Window(QWidget):
         self.Pkwh.clicked.connect(self.RunPkwh)
         self.ActionLayout.addWidget(self.Pkwh)
 
-        self.PackData = QPushButton('Display Pack Data')
-        self.PackData.clicked.connect(self.DisplayPackData)
-        self.ActionLayout.addWidget(self.PackData)
-
         self.MainLayout.addLayout(self.TopLayout)
         self.MainLayout.addLayout(self.ActionLayout)
 
@@ -376,7 +363,8 @@ class Window(QWidget):
                                     float(row['maxVoltage']), 
                                     float(row['minVoltage']), 
                                     float(row['nomVoltage']), 
-                                    float(row['maxCrate'])))
+                                    float(row['maxCrate']),
+                                    float(row['contCrate'])))
 
     def FindBatteryPacks(self):
         
@@ -444,18 +432,6 @@ class Window(QWidget):
         data = MaxPkw(batteryPack)
         title = self.SelectedCell.currentText() + ' - ' + self.SelectedConfig.currentText()
         GraphPkwh(data, title)
-
-    def DisplayPackData(self):
-        global cell
-        global batteryPack
-        cell = self.cells[self.cellNames.index(self.SelectedCell.currentText())]
-        
-        batteryPack = BatteryPack(self.confs[self.confNames.index(self.SelectedConfig.currentText())][0],
-                                      self.confs[self.confNames.index(self.SelectedConfig.currentText())][1],
-                                      cell)
-        self.PackDataWindow = PackData()
-        self.PackDataWindow.show()
-
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)

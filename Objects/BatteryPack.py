@@ -15,6 +15,7 @@ class BatteryPack:
         self.nomVoltage =  self.Series * self.Cell.nomVoltage
         self.Capacity = self.Cell.capacity * self.Series * self.Parallel
         self.maxDischarge = self.Cell.maxCrate * self.Cell.ampacity * self.Parallel
+        self.contDischarge = self.Cell.contCrate * self.Cell.ampacity * self.Parallel
     
 
     def CurrentResistance(self, wh):
