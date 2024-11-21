@@ -242,6 +242,84 @@ class DischargeGraphWindow(QWidget):
         title = self.SelectedCell.currentText() + ' - ' + self.SelectedConfig.currentText()
         GraphDP(data, 'watt hours', 'Pack', title)
 
+class PkwhGraphWindow(QWidget):
+    def __init__(self, cellNames, confNames, cells, confs):
+        super().__init__()
+        self.MainLayout = QVBoxLayout()
+        self.cellNames = cellNames
+        self.confNames = confNames
+        self.cells = cells
+        self.confs = confs
+        self.data = {}
+
+        self.MainLayout.addWidget(QLabel('Select battery pack A'))
+        self.layout1 = QHBoxLayout()
+        self.SelectedCell1 = QComboBox()
+        self.SelectedCell1.addItems(self.cellNames)
+        self.layout1.addWidget(self.SelectedCell1)
+
+        
+        self.SelectedConfig1 = QComboBox()
+        self.SelectedConfig1.addItems(self.confNames)
+        self.layout1.addWidget(self.SelectedConfig1)
+        
+        self.MainLayout.addLayout(self.layout1)
+
+        self.MainLayout.addWidget(QLabel('Select battery pack B'))
+        # self.cells[0] = 'None'
+        # self.cellNames[0] = 'None'
+        # self.confs[0] = 'None'
+        # self.confNames[0] = 'None'
+
+        self.layout2 = QHBoxLayout()
+        self.SelectedCell2 = QComboBox()
+        self.SelectedCell2.addItem('None')
+        self.SelectedCell2.addItems(self.cellNames)
+        self.layout2.addWidget(self.SelectedCell2)
+
+        self.SelectedConfig2 = QComboBox()
+        self.SelectedConfig2.addItem('None')
+        self.SelectedConfig2.addItems(self.confNames)
+        self.layout2.addWidget(self.SelectedConfig2)
+        
+        self.MainLayout.addLayout(self.layout2)
+
+        self.showDataInput = QPushButton('Show pack data?')
+        self.showData = True
+        self.showDataInput.setCheckable(True)
+        self.showDataInput.setChecked(True)
+        self.showDataInput.clicked.connect(self.toggledata)
+        
+        self.MainLayout.addWidget(self.showDataInput)
+
+        self.run = QPushButton('Run')
+        self.run.clicked.connect(self.Run)
+        self.MainLayout.addWidget(self.run)
+
+
+        self.setLayout(self.MainLayout)
+
+    def toggledata(self):
+        self.showData = not(self.showData)
+        # self.showDataInput.click
+    def Run(self):
+        self.data = {}
+        title1 = self.SelectedCell1.currentText() + ' - ' + self.SelectedConfig1.currentText()
+        cell1 = self.cells[self.cellNames.index(self.SelectedCell1.currentText())]
+        batteryPack1 = BatteryPack(self.confs[self.confNames.index(self.SelectedConfig1.currentText())][0],
+                                  self.confs[self.confNames.index(self.SelectedConfig1.currentText())][1],
+                                  cell1)
+        self.data[title1] = MaxPkw(batteryPack1)
+        if self.SelectedCell2.currentText() != 'None' and self.SelectedConfig2.currentText() != 'None':
+            title2 = self.SelectedCell2.currentText() + ' - ' + self.SelectedConfig2.currentText()
+            cell2 = self.cells[self.cellNames.index(self.SelectedCell2.currentText())]
+            batteryPack2 = BatteryPack(self.confs[self.confNames.index(self.SelectedConfig2.currentText())][0],
+                                      self.confs[self.confNames.index(self.SelectedConfig2.currentText())][1],
+                                      cell2)
+            self.data[title2] = MaxPkw(batteryPack2)
+        GraphPkwh(self.data, self.showData)
+
+
 class Window(QWidget):
     def __init__(self):
         super().__init__()
@@ -320,6 +398,8 @@ class Window(QWidget):
         
         self.FindCells()
         self.FindBatteryPacks()
+
+        self.PkwhData = {}
 
         self.SelectedCell.addItems(self.cellNames)
         self.SelectedConfig.addItems(self.confNames)
@@ -421,17 +501,28 @@ class Window(QWidget):
         GraphVsoc(data, title)
 
     def RunPkwh(self):
-        global data
-        global cell
-        global batteryPack
-        cell = self.cells[self.cellNames.index(self.SelectedCell.currentText())]
         
-        batteryPack = BatteryPack(self.confs[self.confNames.index(self.SelectedConfig.currentText())][0],
-                                      self.confs[self.confNames.index(self.SelectedConfig.currentText())][1],
-                                      cell)
-        data = MaxPkw(batteryPack)
-        title = self.SelectedCell.currentText() + ' - ' + self.SelectedConfig.currentText()
-        GraphPkwh(data, title)
+        self.PkwhWindow = PkwhGraphWindow(self.cellNames, self.confNames, self.cells, self.confs)
+        # self.PkwhWindow.cellNames = self.cellNames
+        # # self.PkwhWindow.cells = self.cells
+        # self.PkwhWindow.confNames = self.confNames
+        # self.PkwhWindow.confs = self.confs
+        self.PkwhWindow.show()
+
+        
+        # batteryPacks = {}
+        # cell = self.cells[self.cellNames.index(self.SelectedCell.currentText())]
+        
+        # batteryPack = BatteryPack(self.confs[self.confNames.index(self.SelectedConfig.currentText())][0],
+        #                               self.confs[self.confNames.index(self.SelectedConfig.currentText())][1],
+        #                               cell)
+       
+        # title = self.SelectedCell.currentText() + ' - ' + self.SelectedConfig.currentText()
+        # self.PkwhData[title] = MaxPkw(batteryPack)
+        # GraphPkwh(self.PkwhData)
+
+
+    
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)

@@ -1,16 +1,6 @@
 import matplotlib.pyplot as plt
 
 def GraphTP(data, selected, title):
-    # fig = plt.figure()
-    # for key in selected:
-    #     plt.plot(data['time (s)'], data[key], label = key)
-
-    # plt.grid()
-    # plt.legend()
-    # plt.title(title)
-    # plt.show()
-
-
     fig, ax = plt.subplots(1, 1, figsize=(8, 4))
 
     for key in selected:
@@ -55,39 +45,57 @@ def GraphDP(data, type1, type2, title):
     plt.show()   
 
 def GraphVsoc(data, title):
-    fig = plt.figure()
+    fig = plt.figure(figsize=(8,4))
     plt.plot(data['State of Charge'], data['OC Voltage'])
+    plt.gca().invert_xaxis()
     plt.grid()
     plt.ylabel('Open Circuit Voltage')
     plt.xlabel('State of Charge')
     plt.title(title)
     plt.show()   
 
-def GraphPkwh(data, title):
-    # fig = plt.figure()
-    fig, ax = plt.subplots(1, 1, figsize=(8, 4))
-    plt.plot(data['M State of charge (%)'], data['Max Peak Power (kW)'], label = 'Max Peak Power (kW)', linestyle = '--')
-    plt.plot(data['C State of charge (%)'], data['Max Continuous Power (kW)'], label = 'Max Continuous Power (kW)')
-    # plt.plot(data['State of charge (%)'], data['Max Current (Amps)'], label = 'Max Current (Amps)')
-    plt.gca().invert_xaxis()
-    batteryPack = data['batteryPack']
-    if data.keys().__contains__('Discharge Limit'):
-        plt.hlines(data['Discharge Limit'], 0, 100, color = 'red', label = 'Max discharge limit', linestyle = 'dashed')
+def GraphPkwh(data, showData):
+    fig, ax = plt.subplots(1, 1, figsize=(10, 4))
+    text = []
+    i = 0
+    for key in data.keys():
+        
+        if i > 1:
+            break
+        plt.plot(data[key]['M State of charge (%)'], data[key]['Max Peak Power (kW)'], label = key + 'Max Peak Power (kW)', linestyle = '--')
+        plt.plot(data[key]['C State of charge (%)'], data[key]['Max Continuous Power (kW)'], label = key + 'Max Continuous Power (kW)')
+        
+        batteryPack = data[key]['batteryPack']
 
-    text = ('Cell Mass: ' + str(round(batteryPack.cellMass, 2)) + ' Kg\n' +
-        'Max Voltage: ' + str(round(batteryPack.maxVoltage, 2)) + ' Volts\n' +
-        'Nominal Voltage: ' + str(round(batteryPack.nomVoltage, 2)) + ' Volts\n' +
-        'Min Voltage: ' + str(round(batteryPack.minVoltage, 2)) + ' Volts\n' +
-        'Capacity: ' + str(round(batteryPack.Capacity / 1000, 2)) + ' kWh\n' +
-        'Peak current: ' + str(round(batteryPack.maxDischarge, 2)) + ' Amps\n' +
-        'Continuous current: ' + str(round(batteryPack.contDischarge, 2)) + ' Amps\n' +
-        'Resistance: ' + str(round(batteryPack.CurrentResistance(0), 2)) + ' ohms')
-    plt.title(title)
+        if len(data.keys()) == 1:
+            if data[key].keys().__contains__('Discharge Limit'):
+                plt.hlines(data[key]['Discharge Limit'], 0, 100, color = 'red', label = key + 'Max discharge limit', linestyle = 'dashed')
+
+
+        text.append(key + '\n' + 
+            'Cell Mass: ' + str(round(batteryPack.cellMass, 2)) + ' Kg\n' +
+            'Max Voltage: ' + str(round(batteryPack.maxVoltage, 2)) + ' Volts\n' +
+            'Nominal Voltage: ' + str(round(batteryPack.nomVoltage, 2)) + ' Volts\n' +
+            'Min Voltage: ' + str(round(batteryPack.minVoltage, 2)) + ' Volts\n' +
+            'Capacity: ' + str(round(batteryPack.Capacity / 1000, 2)) + ' kWh\n' +
+            'Peak current: ' + str(round(batteryPack.maxDischarge, 2)) + ' Amps\n' +
+            'Continuous current: ' + str(round(batteryPack.contDischarge, 2)) + ' Amps\n' +
+            'Resistance: ' + str(round(batteryPack.CurrentResistance(0), 2)) + ' ohms')
+        i += 1
+
+    plt.gca().invert_xaxis()
+    plt.title('Max Power vs SOC')
     plt.xlabel('State of charge (%)')
-    props = dict(boxstyle='round', facecolor='grey', alpha=0.15)  # bbox features
-    ax.text(1.03, 0.98, text, transform=ax.transAxes, fontsize=9, verticalalignment='top', bbox=props)
-    plt.tight_layout()
-    
+    plt.ylabel('Max Power (kW)')
     plt.grid()
     plt.legend()
+    
+    i = 0
+    if showData:
+        for t in text:
+            props = dict(boxstyle='round', facecolor='grey', alpha=0.15)  # bbox features
+            ax.text(1.03, 1 - (i * (1/len(text))), t, transform=ax.transAxes, fontsize=9, verticalalignment='top', bbox=props)
+            i += 1
+    plt.tight_layout()         
+    
     plt.show()
