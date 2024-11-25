@@ -1,7 +1,7 @@
 import csv
 import math
 
-def ThermalProfile(T0, batteryPack, cont, stateOfCharge, fileName):
+def ThermalProfile(T0, batteryPack, cont, stateOfCharge, fileName, title):
 
     file = open('DriverProfiles/' + fileName, mode = 'r')
     reader = csv.DictReader(file)
@@ -37,12 +37,6 @@ def ThermalProfile(T0, batteryPack, cont, stateOfCharge, fileName):
         data['real Temperature 2 (°C)'] = []
     if keys.__contains__('V'):
         data['real Voltage (V)'] = []
-        discrepenncy = []
-        # data['Current delta'] = []
-        # data['Voltage delta'] = []
-        # data['realCurrent'] = []
-        # data['realResistance'] = []
-        # data['realVoltageDrop'] = []
 
     end = False
 
@@ -64,29 +58,22 @@ def ThermalProfile(T0, batteryPack, cont, stateOfCharge, fileName):
             wh += (loss) / 3600
             T += ((loss) / (batteryPack.cellMass * batteryPack.cellK))
             
-            if soc == 0:
-                print('Dropped below minimum capacity')
-                end = True
-                break
             if V <= batteryPack.minVoltage:
-                print('Dropped below min Voltage')
                 end = True
+                data['break'] = 'Dropped below minimum Voltage'
                 break
             if T >= 60:
-                print('Over heated above 60 degrees')
                 end = True
+                data['break'] = 'Over heated above 60 degrees'
                 break
             if V >= batteryPack.maxVoltage * 1.05:
-                print('max Voltage Achived')
                 end = True
+                data['break'] = 'Reached maximum Voltage'
                 break
-            if soc > 100:
-                print('max Capacity Achived')
-                end = True
-                break
+
             if I >= batteryPack.maxDischarge:
-                print('max discharge fault')
                 end = True
+                data['break'] = 'Maximum discharge fault'
                 break
             if keys.__contains__('t1'):
                 data['real Temperature 1 (°C)'].append((float(row['t1']) - 32) * 5 / 9)
@@ -95,24 +82,6 @@ def ThermalProfile(T0, batteryPack, cont, stateOfCharge, fileName):
             if keys.__contains__('V'):
                 rV = float(row['V'])
                 data['real Voltage (V)'].append(rV)
-                discrepenncy.append((V - rV) / rV)
-                # rI = P / rV
-                # rVdrop = math.fabs(Voc - rV)
-                # if I == 0:
-                #     rR = 0
-                # else:
-                #     rR = rVdrop / rI
-                
-                # # else:
-                # #     rR = rVdrop / rI
-                # # if rR > 1 or rR < 0:
-                # #     rR = 0
-                # data['real Voltage (V)'].append(rV)
-                # data['Voltage delta'].append(rV - V)
-                # data['Current delta'].append(rI - I)
-                # data['realCurrent'].append(rI)
-                # data['realResistance'].append(rR)
-                # data['realVoltageDrop'].append(rVdrop)
 
             data['Voltage (V)'].append(V)
             data['Open Circuit Voltage (V)'].append(Voc)
@@ -137,6 +106,4 @@ def ThermalProfile(T0, batteryPack, cont, stateOfCharge, fileName):
     data['Wh used'] = wh - (0.01 * (100 - stateOfCharge) * batteryPack.Capacity)
     data['Efficency'] = 100 - (100 * ((totalLoss) / data['Wh used']))
     data['laps'] = laps
-    # if keys.__contains__('V'):
-    #     data['Accuracy'] = 100 - 100 * (sum(discrepenncy) / len(discrepenncy))
     return data

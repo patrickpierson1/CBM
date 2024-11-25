@@ -9,13 +9,13 @@ def MaxPkw(batteryPack):
     data['C State of charge (%)'] = []
     data['SOC'] = []
 
-
     data['batteryPack'] = batteryPack
 
     whMax = 0
     whCont = 0
     
-    foundDischargeLimit = False
+    foundcontDischargeLimit = False
+    foundmaxDischargeLimit = False
 
     while True:
         VM = batteryPack.CurrentVoltage(whMax)
@@ -35,20 +35,19 @@ def MaxPkw(batteryPack):
         Pcont = Vcont * Icont
         whCont += Pcont / 3600
 
-        if Icont != batteryPack.contDischarge and not(foundDischargeLimit):
-            data['Discharge Limit'] = Pcont / 1000
-            foundDischargeLimit = True
+        if Icont != batteryPack.contDischarge and not(foundcontDischargeLimit):
+            data['cont Discharge Limit'] = (Pcont / 1000, (1 - (whCont / batteryPack.Capacity))*100)
+            foundcontDischargeLimit = True
 
-        
+        if Imax != batteryPack.maxDischarge and not(foundmaxDischargeLimit):
+            data['max Discharge Limit'] = (Pmax / 1000, (1 - (whMax / batteryPack.Capacity))*100)
+            foundmaxDischargeLimit = True
+
         data['Max Peak Power (kW)'].append(Pmax/ 1000)
         data['Max Continuous Power (kW)'].append(Pcont/ 1000)
         data['M State of charge (%)'].append(((batteryPack.Capacity - whMax) / batteryPack.Capacity) * 100)
         data['C State of charge (%)'].append(((batteryPack.Capacity - whCont) / batteryPack.Capacity) * 100)
 
-        # if VC <= batteryPack.minVoltage:
-        #     break
-        # if wh >= batteryPack.Capacity:
-        #     break
         if Icont <= 1:
             break
     
@@ -62,7 +61,6 @@ def MaxCurrent(VM, VC, R, batteryPack):
     
     Imax = batteryPack.maxDischarge
     Icont = batteryPack.contDischarge
-
 
     if VC - (Icont * R) <= batteryPack.minVoltage * 1.01:
         Icont = (VC - (batteryPack.minVoltage * 1.01)) / R

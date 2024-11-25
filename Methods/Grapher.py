@@ -1,32 +1,40 @@
 import matplotlib.pyplot as plt
 
-def GraphTP(data, selected, title):
-    fig, ax = plt.subplots(1, 1, figsize=(8, 4))
+def GraphTP(data, selected, showData):
+    fig, ax = plt.subplots(1, 1, figsize=(10, 4))
+    text = []
 
-    for key in selected:
-        plt.plot(data['time (s)'], data[key], label = key)
+    for key in data.keys():
 
-    text = ('end Voltage: ' + str(round(data['Voltage (V)'][-1], 2)) + '\n' +
-               'kWh used: ' + str(round(data['Wh used'] / 1000, 2)) + '\n' +
-               'Wh loss: ' + str(round(sum(data['Losses (W)']) / 3600, 2)) + '\n' +
-               'minutes: ' + str(round(data['time (s)'][-1] / 60, 2)) + '\n' +
-               'laps: ' + str(data['laps']) + '\n' +
-               'end Temp ' + str(round(data['Temperature (°C)'][-1], 2)) + '\n' +
-               'Efficency: ' + str(round(data['Efficency'], 2)) + '%')
-    
-    
-    if data.keys().__contains__('Accuracy'):
-        text += '\nAccuracy: ' + str(round(data['Accuracy'], 2)) + '%'
-    
-    props = dict(boxstyle='round', facecolor='grey', alpha=0.15)  # bbox features
-    ax.text(1.03, 0.98, text, transform=ax.transAxes, fontsize=12, verticalalignment='top', bbox=props)
-    plt.tight_layout()
-    plt.legend()
+        for parameter in selected:
+            plt.plot(data[key]['time (s)'], data[key][parameter], label = key + ': ' + parameter)
+
+        curText = (key + '\n' +
+                'end Voltage: ' + str(round(data[key]['Voltage (V)'][-1], 2)) + '\n' +
+                'kWh used: ' + str(round(data[key]['Wh used'] / 1000, 2)) + '\n' +
+                'Wh loss: ' + str(round(sum(data[key]['Losses (W)']) / 3600, 2)) + '\n' +
+                'minutes: ' + str(round(data[key]['time (s)'][-1] / 60, 2)) + '\n' +
+                'laps: ' + str(data[key]['laps']) + '\n' +
+                'end Temp ' + str(round(data[key]['Temperature (°C)'][-1], 2)) + '\n' +
+                'Efficency: ' + str(round(data[key]['Efficency'], 2)) + '%')
+        
+        if data[key].__contains__('break'):
+            curText += '\n' + data[key]['break']
+
+        text.append(curText)
+    plt.legend(fontsize = 6)
     plt.grid()
+    i = 0
+    if showData:
+        for t in text:
+            props = dict(boxstyle='round', facecolor='grey', alpha=0.15)
+            ax.text(1.03, 1 - (i * (1/len(text))), t, transform=ax.transAxes, fontsize=9, verticalalignment='top', bbox=props)
+            i += 1
+    plt.tight_layout()
     plt.show()
 
 def GraphDP(data, type1, type2, title):
-    fig = plt.figure()
+    fig = plt.figure(figsize=(10,4))
     i = 0
     for key in data.keys():
         if key == 'temps' or key == 'times':
@@ -38,14 +46,14 @@ def GraphDP(data, type1, type2, title):
         i += 1
 
     plt.grid()
-    plt.legend()
+    plt.legend(fontsize = 6)
     plt.xlabel(type1 + ' used')
     plt.ylabel(type2 + ' Voltage')
     plt.title(title)
     plt.show()   
 
 def GraphVsoc(data, title):
-    fig = plt.figure(figsize=(8,4))
+    fig = plt.figure(figsize=(10,4))
     plt.plot(data['State of Charge'], data['OC Voltage'])
     plt.gca().invert_xaxis()
     plt.grid()
@@ -67,10 +75,11 @@ def GraphPkwh(data, showData):
         
         batteryPack = data[key]['batteryPack']
 
-        if len(data.keys()) == 1:
-            if data[key].keys().__contains__('Discharge Limit'):
-                plt.hlines(data[key]['Discharge Limit'], 0, 100, color = 'red', label = key + 'Max discharge limit', linestyle = 'dashed')
-
+        if data[key].keys().__contains__('cont Discharge Limit'):   
+            plt.scatter(data[key]['cont Discharge Limit'][1], data[key]['cont Discharge Limit'][0], color = 'red', zorder = 2)
+        
+        if data[key].keys().__contains__('max Discharge Limit'):
+            plt.scatter(data[key]['max Discharge Limit'][1], data[key]['max Discharge Limit'][0], color = 'red', zorder = 2)
 
         text.append(key + '\n' + 
             'Cell Mass: ' + str(round(batteryPack.cellMass, 2)) + ' Kg\n' +
@@ -88,12 +97,12 @@ def GraphPkwh(data, showData):
     plt.xlabel('State of charge (%)')
     plt.ylabel('Max Power (kW)')
     plt.grid()
-    plt.legend()
+    plt.legend(fontsize = 6)
     
     i = 0
     if showData:
         for t in text:
-            props = dict(boxstyle='round', facecolor='grey', alpha=0.15)  # bbox features
+            props = dict(boxstyle='round', facecolor='grey', alpha=0.15)
             ax.text(1.03, 1 - (i * (1/len(text))), t, transform=ax.transAxes, fontsize=9, verticalalignment='top', bbox=props)
             i += 1
     plt.tight_layout()         

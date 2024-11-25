@@ -1,7 +1,6 @@
 from os import scandir
 from PyQt6.QtWidgets import *
 from PyQt6.QtGui import QIcon
-
 import sys
 import csv
 from Objects.BatteryPack import BatteryPack
@@ -18,12 +17,9 @@ from Methods.CDprofile import (CellAhDischargeProfile,
                                 PackWhDischargeProfile,)
 
 # global variables
-cell = None
-batteryPack = None
 T0 = 20.0
 soc = 100
-data = {}
-continuous = False
+continuous = True
 
 class Setup(QWidget):
     def __init__(self):
@@ -162,23 +158,96 @@ class Setup(QWidget):
         self.CellLayout.addWidget(self.inputcCrate)
 
 class GraphWindow(QWidget):
-    def __init__(self):
+    def __init__(self, cellNames, confNames, cells, confs, filename):
         super().__init__()
-        self.MainLayout = QVBoxLayout()
-        
-        self.SelectedFields = []
-        for key in data.keys():
-            if (key != 'timeData') and (key != 'laps') and (key != 'Wh used') and (key != 'Efficency'):
-                CurrentField = QCheckBox(key)
-                CurrentField.name = key
-                CurrentField.stateChanged.connect(self.selected)
-                self.MainLayout.addWidget(CurrentField)
-                    
-        self.Submit = QPushButton('Graph Selected Fields')
-        self.Submit.clicked.connect(self.SubmitGraph)
-        self.MainLayout.addWidget(self.Submit)
+        self.cellNames = cellNames
+        self.confNames = confNames
+        self.cells = cells
+        self.confs = confs
+        self.filename = filename
+        self.expanded = False
 
+        self.MainLayout = QHBoxLayout()
+        self.ParamLayout = QVBoxLayout()
+        self.SourceLayout = QVBoxLayout()
+
+        self.SourceLayout.addWidget(QLabel('Select battery pack A'))
+        self.layout1 = QHBoxLayout()
+        self.SelectedCell1 = QComboBox()
+        self.SelectedCell1.addItems(self.cellNames)
+        self.layout1.addWidget(self.SelectedCell1)
+
+        self.SelectedConfig1 = QComboBox()
+        self.SelectedConfig1.addItems(self.confNames)
+        self.layout1.addWidget(self.SelectedConfig1)
+        
+        self.SourceLayout.addLayout(self.layout1)
+
+        self.SourceLayout.addWidget(QLabel('Select battery pack B'))
+
+        self.layout2 = QHBoxLayout()
+        self.SelectedCell2 = QComboBox()
+        self.SelectedCell2.addItem('None')
+        self.SelectedCell2.addItems(self.cellNames)
+        self.layout2.addWidget(self.SelectedCell2)
+
+        self.SelectedConfig2 = QComboBox()
+        self.SelectedConfig2.addItem('None')
+        self.SelectedConfig2.addItems(self.confNames)
+        self.layout2.addWidget(self.SelectedConfig2)
+        
+        self.SourceLayout.addLayout(self.layout2)
+
+        self.showDataInput = QPushButton('Show pack data?')
+        self.showData = True
+        self.showDataInput.setCheckable(True)
+        self.showDataInput.setChecked(True)
+        self.showDataInput.clicked.connect(self.toggledata)
+        
+        self.SourceLayout.addWidget(self.showDataInput)
+
+        self.run = QPushButton('Run')
+        self.run.clicked.connect(self.Run)
+        self.SourceLayout.addWidget(self.run)
+
+        self.SourceLayout.addStretch()
+        self.SourceLayout.setSpacing(10)
+
+        self.MainLayout.addLayout(self.SourceLayout)
+        
         self.setLayout(self.MainLayout)
+
+    def Run(self):
+        self.data = {}
+        title1 = self.SelectedCell1.currentText() + ' - ' + self.SelectedConfig1.currentText()
+        cell1 = self.cells[self.cellNames.index(self.SelectedCell1.currentText())]
+        batteryPack1 = BatteryPack(self.confs[self.confNames.index(self.SelectedConfig1.currentText())][0],
+                                  self.confs[self.confNames.index(self.SelectedConfig1.currentText())][1],
+                                  cell1)
+        
+        self.data[title1] = ThermalProfile(T0, batteryPack1, continuous, soc, self.filename, title1)
+        if self.SelectedCell2.currentText() != 'None' and self.SelectedConfig2.currentText() != 'None':
+            title2 = self.SelectedCell2.currentText() + ' - ' + self.SelectedConfig2.currentText()
+            cell2 = self.cells[self.cellNames.index(self.SelectedCell2.currentText())]
+            batteryPack2 = BatteryPack(self.confs[self.confNames.index(self.SelectedConfig2.currentText())][0],
+                                      self.confs[self.confNames.index(self.SelectedConfig2.currentText())][1],
+                                      cell2)
+            self.data[title2] = ThermalProfile(T0, batteryPack2, continuous, soc, self.filename, title2)
+        
+        if not(self.expanded):
+            self.SelectedFields = []
+            for key in self.data[title1].keys():
+                if (key != 'timeData') and (key != 'laps') and (key != 'Wh used') and (key != 'Efficency'):
+                    CurrentField = QCheckBox(key)
+                    CurrentField.name = key
+                    CurrentField.stateChanged.connect(self.selected)
+                    self.ParamLayout.addWidget(CurrentField)
+                        
+            self.Submit = QPushButton('Graph Selected Fields')
+            self.Submit.clicked.connect(self.SubmitGraph)
+            self.ParamLayout.addWidget(self.Submit)
+            self.MainLayout.addLayout(self.ParamLayout)
+            self.expanded = True
 
     def selected(self):
         cur = self.sender()
@@ -187,9 +256,11 @@ class GraphWindow(QWidget):
         else:
             self.SelectedFields.remove(cur.name)
 
+    def toggledata(self):
+        self.showData = not(self.showData)
+
     def SubmitGraph(self):
-        title = self.SelectedCell.currentText() + ' - ' + self.SelectedConfig.currentText() + ' - ' +  self.FileName
-        GraphTP(data, self.SelectedFields, title)
+        GraphTP(self.data, self.SelectedFields, self.showData)
 
 class DischargeGraphWindow(QWidget):
     def __init__(self):
@@ -266,10 +337,6 @@ class PkwhGraphWindow(QWidget):
         self.MainLayout.addLayout(self.layout1)
 
         self.MainLayout.addWidget(QLabel('Select battery pack B'))
-        # self.cells[0] = 'None'
-        # self.cellNames[0] = 'None'
-        # self.confs[0] = 'None'
-        # self.confNames[0] = 'None'
 
         self.layout2 = QHBoxLayout()
         self.SelectedCell2 = QComboBox()
@@ -296,12 +363,11 @@ class PkwhGraphWindow(QWidget):
         self.run.clicked.connect(self.Run)
         self.MainLayout.addWidget(self.run)
 
-
         self.setLayout(self.MainLayout)
 
     def toggledata(self):
         self.showData = not(self.showData)
-        # self.showDataInput.click
+    
     def Run(self):
         self.data = {}
         title1 = self.SelectedCell1.currentText() + ' - ' + self.SelectedConfig1.currentText()
@@ -318,7 +384,6 @@ class PkwhGraphWindow(QWidget):
                                       cell2)
             self.data[title2] = MaxPkw(batteryPack2)
         GraphPkwh(self.data, self.showData)
-
 
 class Window(QWidget):
     def __init__(self):
@@ -354,20 +419,13 @@ class Window(QWidget):
         self.SelectedConfig = QComboBox()
         self.SelectedConfig.addItems(self.confNames)
         self.TopLayout.addWidget(self.SelectedConfig)
-
-        global cell
-        global batteryPack
-        cell = self.cells[self.cellNames.index(self.SelectedCell.currentText())]
-        batteryPack = BatteryPack(self.confs[self.confNames.index(self.SelectedConfig.currentText())][0],
-                                      self.confs[self.confNames.index(self.SelectedConfig.currentText())][1],
-                                      cell)
         
         self.RefreshButton = QPushButton()
         self.RefreshButton.clicked.connect(self.Refresh)
         self.RefreshButton.setIcon(QIcon('Objects/Images/Refresh-Logo.png'))
         self.TopLayout.addWidget(self.RefreshButton)
 
-        self.ThermalProfile = QPushButton('Run Thermal Profile')
+        self.ThermalProfile = QPushButton('Run Drive Profile')
         self.ThermalProfile.clicked.connect(self.RunThermalProfile)
         self.ActionLayout.addWidget(self.ThermalProfile)
 
@@ -459,20 +517,9 @@ class Window(QWidget):
             self.confs.append((float(row['series']), float(row['parallel'])))
 
     def RunThermalProfile(self):
-        global data
-        global cell
-        global batteryPack
-        cell = self.cells[self.cellNames.index(self.SelectedCell.currentText())]
-        
-        batteryPack = BatteryPack(self.confs[self.confNames.index(self.SelectedConfig.currentText())][0],
-                                      self.confs[self.confNames.index(self.SelectedConfig.currentText())][1],
-                                      cell)
-        data = ThermalProfile(T0, batteryPack, continuous, soc, self.InputFile.currentText())
-        self.GraphWindow = GraphWindow()
-        self.GraphWindow.SelectedCell = self.SelectedCell
-        self.GraphWindow.SelectedConfig = self.SelectedConfig
-        self.GraphWindow.FileName = self.InputFile.currentText()
-        self.GraphWindow.show()
+        self.DriveProfileWindow = GraphWindow(self.cellNames, self.confNames, self.cells, self.confs, self.InputFile.currentText())
+        self.DriveProfileWindow.setWindowTitle('Drive Profile')
+        self.DriveProfileWindow.show()
     
     def RunDischargeProfile(self):
         self.DischargeGraphWindow = DischargeGraphWindow()
@@ -484,12 +531,10 @@ class Window(QWidget):
         self.DischargeGraphWindow.confNames = self.confNames
         self.DischargeGraphWindow.SelectedConfig = self.SelectedConfig
 
+        self.DischargeGraphWindow.setWindowTitle('Discharge Profile')
         self.DischargeGraphWindow.show()
 
     def RunVsoc(self):
-        global data
-        global cell
-        global batteryPack
         cell = self.cells[self.cellNames.index(self.SelectedCell.currentText())]
         
         batteryPack = BatteryPack(self.confs[self.confNames.index(self.SelectedConfig.currentText())][0],
@@ -501,28 +546,9 @@ class Window(QWidget):
         GraphVsoc(data, title)
 
     def RunPkwh(self):
-        
         self.PkwhWindow = PkwhGraphWindow(self.cellNames, self.confNames, self.cells, self.confs)
-        # self.PkwhWindow.cellNames = self.cellNames
-        # # self.PkwhWindow.cells = self.cells
-        # self.PkwhWindow.confNames = self.confNames
-        # self.PkwhWindow.confs = self.confs
+        self.PkwhWindow.setWindowTitle('Max Power vs SOC')
         self.PkwhWindow.show()
-
-        
-        # batteryPacks = {}
-        # cell = self.cells[self.cellNames.index(self.SelectedCell.currentText())]
-        
-        # batteryPack = BatteryPack(self.confs[self.confNames.index(self.SelectedConfig.currentText())][0],
-        #                               self.confs[self.confNames.index(self.SelectedConfig.currentText())][1],
-        #                               cell)
-       
-        # title = self.SelectedCell.currentText() + ' - ' + self.SelectedConfig.currentText()
-        # self.PkwhData[title] = MaxPkw(batteryPack)
-        # GraphPkwh(self.PkwhData)
-
-
-    
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
