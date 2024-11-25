@@ -3,11 +3,17 @@ import matplotlib.pyplot as plt
 def GraphTP(data, selected, showData):
     fig, ax = plt.subplots(1, 1, figsize=(10, 4))
     text = []
-
+    realParms = []
     for key in data.keys():
 
         for parameter in selected:
-            plt.plot(data[key]['time (s)'], data[key][parameter], label = key + ': ' + parameter)
+            if parameter.__contains__('real'):
+                if not(realParms.__contains__(parameter)):
+                    plt.plot(data[key]['time (s)'], data[key][parameter], label = parameter)
+                    realParms.append(parameter)
+            else:
+                plt.plot(data[key]['time (s)'], data[key][parameter], label = key + ': ' + parameter)
+            
 
         curText = (key + '\n' +
                 'end Voltage: ' + str(round(data[key]['Voltage (V)'][-1], 2)) + '\n' +
