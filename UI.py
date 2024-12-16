@@ -18,8 +18,8 @@ from Methods.CDprofile import (CellAhDischargeProfile,
 
 # global variables
 T0 = 20.0
-soc = 100
-continuous = True
+soc = 55
+continuous = False
 
 class Setup(QWidget):
     def __init__(self):

@@ -1,5 +1,6 @@
 import csv
 import math
+import numpy as np
 
 def ThermalProfile(T0, batteryPack, cont, stateOfCharge, fileName, title):
 
@@ -12,6 +13,7 @@ def ThermalProfile(T0, batteryPack, cont, stateOfCharge, fileName, title):
     totalLoss = 0
     soc = stateOfCharge
     wh = 0.01 * (100 - soc) * batteryPack.Capacity
+    V = batteryPack.CurrentVoltage(wh)
     
     keys = []
 
@@ -19,6 +21,7 @@ def ThermalProfile(T0, batteryPack, cont, stateOfCharge, fileName, title):
         keys.append(key)
 
     data = {}
+
     data['Open Circuit Voltage (V)'] = []
     data['Voltage (V)'] = []
     data['Temperature (°C)'] = []
@@ -32,32 +35,43 @@ def ThermalProfile(T0, batteryPack, cont, stateOfCharge, fileName, title):
     data['Voltage Drop (V)'] = []
 
     if keys.__contains__('t1'):
-        data['real Temperature 1 (°C)'] = []
-    if keys.__contains__('t2'):
-        data['real Temperature 2 (°C)'] = []
+        data['real average Temp (°C)'] = []
+
     if keys.__contains__('V'):
         data['real Voltage (V)'] = []
 
     end = False
 
+    V_lag = 0.0
+    dt = 0.1  
+
     while True:
 
         for row in reader:
+            t += dt
+            P = (float(row['kW']) * 1000)  # Power in watts
+            R = batteryPack.CurrentResistance(wh)  # Current internal resistance
+            Voc = batteryPack.CurrentVoltage(wh)  # Open-circuit voltage
+            # C = tau / R  # Derived capacitance based on time constant and resistance
 
-            t += 1
-            P = (float(row['kW']) * 1000)
-            R = batteryPack.CurrentResistance(wh)
-            Voc = batteryPack.CurrentVoltage(wh)     
-            I = ((-Voc) + math.sqrt(((-Voc) ** 2) - (4 * -R * -(P)))) / (2 * -R)
-            Vdrop = I * R
+            # Calculate current if power is nonzero
+            if P > 0:
+                I = (Voc - math.sqrt((Voc ** 2) - (4 * R * P))) / (2 * R)
+            else:
+                I = 0.0
+
+            # Update the lag voltage using the RC dynamics
+            V_lag += dt * (-V_lag + R * I)
+
+            # Calculate terminal voltage
+            Vdrop = R * I + V_lag
             V = Voc - Vdrop
-            soc = 100 * (1 - (wh / (batteryPack.Capacity)))
-            wh += P / 3600
-            loss = ((I ** 2) * (R))
-            totalLoss += loss / 3600
-            wh += (loss) / 3600
-            T += ((loss) / (batteryPack.cellMass * batteryPack.cellK))
-            
+
+            soc = 100 * (1 - (wh / batteryPack.Capacity))
+            wh += (Voc * I) / 36000
+            loss = Vdrop * I
+            totalLoss += loss / 36000
+            T += ((loss / 10) / (batteryPack.cellMass * batteryPack.cellK))
             if V <= batteryPack.minVoltage:
                 end = True
                 data['break'] = 'Dropped below minimum Voltage'
@@ -75,13 +89,18 @@ def ThermalProfile(T0, batteryPack, cont, stateOfCharge, fileName, title):
                 end = True
                 data['break'] = 'Maximum discharge fault'
                 break
-            if keys.__contains__('t1'):
-                data['real Temperature 1 (°C)'].append((float(row['t1']) - 32) * 5 / 9)
-            if keys.__contains__('t2'):
-                data['real Temperature 2 (°C)'].append((float(row['t2']) - 32) * 5 / 9)
+
             if keys.__contains__('V'):
                 rV = float(row['V'])
                 data['real Voltage (V)'].append(rV)
+
+            if keys.__contains__('t1'):
+                realtemps = []
+                for key in keys:
+                    if key.__contains__('t'):
+                        realtemps.append((float(row[key]) - 32) * 5 / 9)
+                data['real average Temp (°C)'].append(sum(realtemps) / len(realtemps))
+
 
             data['Voltage (V)'].append(V)
             data['Open Circuit Voltage (V)'].append(Voc)
@@ -93,7 +112,6 @@ def ThermalProfile(T0, batteryPack, cont, stateOfCharge, fileName, title):
             data['Watt-hours consumed (Wh)'].append(wh)
             data['Power (kW)'].append(P / 1000)
             data['State of Charge (%)'].append(soc)
-            data['Voltage Drop (V)'].append(Vdrop)
 
         laps += 1
         if not(end) and (cont):          

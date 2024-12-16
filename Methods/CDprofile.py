@@ -1,8 +1,20 @@
 # discharge profile of a cell with respect to ah consumed
 def CellAhDischargeProfile(cell, T0):
 
-    currents = [0.5, 1, 3, 5, 10, 15, 20]
+    # currents = [0.5, 1, 3, 5, 10, 15, 20]
     # currents = [0.01]
+    currents = []
+    
+    curC = 0.5
+    
+    while curC <= cell.maxCrate:
+        currents.append(curC * cell.ampacity)
+        if curC == cell.maxCrate:
+            break
+        elif curC * 2 > cell.maxCrate:
+            curC = cell.maxCrate
+        else:
+            curC *= 2
 
     data = {}
     data['temps'] = []
@@ -42,7 +54,6 @@ def CellAhDischargeProfile(cell, T0):
 
             if V <= cell.minVoltage:
                 break
-
         
         data[str(I)] = (ahdata, Vdata)
         data['temps'].append(T)

@@ -13,10 +13,11 @@ class Cell:
         self.maxVoltage = maxVoltage
         self.minVoltage = minVoltage
         self.nomVoltage = nomVoltage 
-        self.setCapacity()
+        # self.setCapacity()
+        self.capacity = self.nomVoltage * self.ampacity
         
-    def setCapacity(self):
-        self.capacity = quad(self.Vah, 0, self.ampacity)[0]
+    # def setCapacity(self):
+    #     self.capacity = quad(self.Vah, 0, self.ampacity)[0]
 
     # V(wh) = i wh^3 + j wh^2 + kwh + d
     def V(self, wh):
