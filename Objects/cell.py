@@ -1,4 +1,3 @@
-from scipy.integrate import quad
 
 class Cell:
     def __init__(self, mass, resistance, k, ampacity, maxVoltage, minVoltage, nomVoltage, maxCrate, contCrate):
