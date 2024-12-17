@@ -1,6 +1,5 @@
 import csv
 import math
-import numpy as np
 
 def ThermalProfile(T0, batteryPack, cont, stateOfCharge, fileName, title):
 
@@ -52,11 +51,22 @@ def ThermalProfile(T0, batteryPack, cont, stateOfCharge, fileName, title):
             P = (float(row['kW']) * 1000)  # Power in watts
             R = batteryPack.CurrentResistance(wh)  # Current internal resistance
             Voc = batteryPack.CurrentVoltage(wh)  # Open-circuit voltage
-            # C = tau / R  # Derived capacitance based on time constant and resistance
-
+            
             # Calculate current if power is nonzero
-            if P > 0:
-                I = (Voc - math.sqrt((Voc ** 2) - (4 * R * P))) / (2 * R)
+            if P != 0:
+                # P = (Voc - IR - V_lag)I
+                # P = (Voc - IR - V_lag0 - dt(-Vlag0 + RI))I
+                # P = (Voc - I(R + dt*R) - V_lag0(1 - dt))I
+                # 0 = -R(1 + dt)I^2 + (Voc - V_lag0(1 - dt))I - P
+                # 0 = R(1 + dt)I^2 - (Voc - V_lag0(1 - dt))I + P
+
+                I = (((Voc - V_lag * (1 - dt)) 
+                     - math.sqrt(((Voc - V_lag * (1 - dt)) ** 2) 
+                                 - (4 * R * (1 + dt) * P))) 
+                    / (2 * R * (1 + dt)))
+
+
+                # I = (Voc - math.sqrt((Voc ** 2) - (4 * R * P))) / (2 * R)
             else:
                 I = 0.0
 
@@ -72,6 +82,7 @@ def ThermalProfile(T0, batteryPack, cont, stateOfCharge, fileName, title):
             loss = Vdrop * I
             totalLoss += loss / 36000
             T += ((loss / 10) / (batteryPack.cellMass * batteryPack.cellK))
+            
             if V <= batteryPack.minVoltage:
                 end = True
                 data['break'] = 'Dropped below minimum Voltage'
