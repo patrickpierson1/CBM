@@ -1,11 +1,11 @@
 
-class samsung50s:
+class mollicellP50B:
     def __init__(self):
 
         self.mass = 0.07 # kg
         self.resistance = 0.013 # Ohms
         self.K = 830 # Specific heat: J/(kg T)
-        self.ampacity = 5 # ah
+        self.ampacity = 5.22 # ah
         self.maxCrate = 9
         self.contCrate = 5
 

@@ -1,13 +1,13 @@
 
-class samsung50s:
+class molicellP42A:
     def __init__(self):
 
         self.mass = 0.07 # kg
-        self.resistance = 0.013 # Ohms
+        self.resistance = 0.016 # Ohms
         self.K = 830 # Specific heat: J/(kg T)
-        self.ampacity = 5 # ah
-        self.maxCrate = 9
-        self.contCrate = 5
+        self.ampacity = 4.2 # ah
+        self.maxCrate = 11
+        self.contCrate = 7
 
         self.maxVoltage = 4.2
         self.minVoltage = 2.5
@@ -23,17 +23,17 @@ class samsung50s:
     # V(wh) = i wh^3 + j wh^2 + kwh + d
     
     def V(self, wh):
-        return ((-0.0005765195243976844*(wh**3)) +
-                (0.011583831124273847*(wh**2)) -
-                (0.10283815053158879*(wh)) +
-                (4.199404493564835))
+        return ((-0.0010026288424835525*(wh**3)) +
+                (0.016872148199448996*(wh**2)) -
+                (0.12682887577639235*(wh)) +
+                (4.204924198718271))
     # constant resistance
     def R(self, wh):
-        return ((6.003454079908092e-07*(wh**4)) -
-                (2.2788963597369644e-05*(wh**3)) +
-                (0.0003014188006422359)*(wh**2) -
-                (0.0016783757827011977*(wh)) + 
-                (0.013695419182316364))
+        return ((2.8428042114002936e-06*(wh**4)) -
+                (8.521904508774402e-05*(wh**3)) +
+                (0.000898953287697768)*(wh**2) -
+                (0.004059380957155576*(wh)) + 
+                (0.023445877378438087))
     
     # V(ah) = a ah^3 + b ah^2 + c ah + d
     def Vah(self, ah):

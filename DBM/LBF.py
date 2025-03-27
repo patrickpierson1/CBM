@@ -98,9 +98,9 @@ def main():
     files = getFiles()
     fileName = files[int(input("Enter file number: "))]    
     t, V, R = getData(fileName)
-    I = 3
+    I = 2
     wh = convertToWh(t, V, I)
-    # graphV(np.array(wh), np.array(V))
+    graphV(np.array(wh), np.array(V))
     graphR(np.array(wh), np.array(R))
 
 main()

@@ -5,6 +5,7 @@ import sys
 import csv
 from Objects.BatteryPack import BatteryPack
 from Objects.SavedCells.Samsung50s import samsung50s
+from Objects.SavedCells.MolicellP42A import molicellP42A
 from Methods.dT import ThermalProfile
 from Methods.Vsoc import Vsoc
 from Methods.MaxPkwh import MaxPkw
@@ -326,8 +327,8 @@ class Window(QWidget):
     def __init__(self):
         super().__init__()
 
-        self.cellNames = ['Samsung50s']
-        self.cells = [samsung50s()]
+        self.cellNames = ['Samsung50s', 'MolicellP42A']
+        self.cells = [samsung50s(), molicellP42A()]
 
         self.confNames = []
         self.confs = []
