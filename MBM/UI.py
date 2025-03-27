@@ -475,7 +475,7 @@ class Window(QWidget):
 
     def FindDriverProfiles(self):
         files = []
-        for entry in scandir('DriverProfiles'):
+        for entry in scandir('MBM\DriverProfiles'):
             if entry.is_file():
                 name = entry.name
                 t = name.split('.')
@@ -487,7 +487,7 @@ class Window(QWidget):
     
     def FindCells(self):
         
-        file = open('Objects/SavedCells/Cells.csv', mode = 'r')
+        file = open('MBM\Objects\SavedCells\Cells.csv', mode = 'r')
         reader = csv.DictReader(file)
         self.cellNames = []
         self.cells = []
@@ -506,7 +506,7 @@ class Window(QWidget):
 
     def FindBatteryPacks(self):
         
-        file = open('Objects/SavedBatteryPacks/BatteryPacks.csv', mode = 'r')
+        file = open('MBM\Objects\SavedBatteryPacks\BatteryPacks.csv', mode = 'r')
         reader = csv.DictReader(file)
         self.confNames = []
         self.confs = []
