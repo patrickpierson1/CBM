@@ -3,7 +3,7 @@ import math
 
 def ThermalProfile(T0, batteryPack, cont, stateOfCharge, fileName, title):
 
-    file = open('DBM/DriverProfiles/' + fileName, mode = 'r')
+    file = open('DriverProfiles/' + fileName, mode = 'r')
     reader = csv.DictReader(file)
 
     t = 0.0
@@ -130,7 +130,7 @@ def ThermalProfile(T0, batteryPack, cont, stateOfCharge, fileName, title):
         laps += 1
         if not(end) and (cont):          
             file.close()
-            file = open('DBM/DriverProfiles/' + fileName, mode = 'r')
+            file = open('DriverProfiles/' + fileName, mode = 'r')
             reader = csv.DictReader(file)
         else:
             break

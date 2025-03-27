@@ -3,7 +3,7 @@ import math
 
 def ThermalProfile(T0, batteryPack, cont, stateOfCharge, fileName, title):
 
-    file = open('MBM/DriverProfiles/' + fileName, mode = 'r')
+    file = open('DriverProfiles/' + fileName, mode = 'r')
     reader = csv.DictReader(file)
 
     t = 0.0

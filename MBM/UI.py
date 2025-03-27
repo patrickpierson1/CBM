@@ -18,8 +18,8 @@ from Methods.CDprofile import (CellAhDischargeProfile,
 
 # global variables
 T0 = 20.0
-soc = 55
-continuous = False
+soc = 100
+continuous = True
 
 class Setup(QWidget):
     def __init__(self):
@@ -475,7 +475,7 @@ class Window(QWidget):
 
     def FindDriverProfiles(self):
         files = []
-        for entry in scandir('MBM\DriverProfiles'):
+        for entry in scandir('DriverProfiles'):
             if entry.is_file():
                 name = entry.name
                 t = name.split('.')
