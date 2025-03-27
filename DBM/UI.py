@@ -4,7 +4,7 @@ from PyQt6.QtGui import QIcon
 import sys
 import csv
 from Objects.BatteryPack import BatteryPack
-from DBM.Objects.SavedCells.Samsung50s import Cell
+from Objects.SavedCells.Samsung50s import samsung50s
 from Methods.dT import ThermalProfile
 from Methods.Vsoc import Vsoc
 from Methods.MaxPkwh import MaxPkw
@@ -18,51 +18,54 @@ from Methods.CDprofile import (CellAhDischargeProfile,
 
 # global variables
 T0 = 20.0
-soc = 55
-continuous = False
+soc = 100
+continuous = True
+
+# cells = ['Samsung50s']
+
 
 class Setup(QWidget):
     def __init__(self):
         super().__init__()
         MainLayout = QHBoxLayout()
-        self.CellLayout = QVBoxLayout()
+        # self.CellLayout = QVBoxLayout()
         self.BatteryPackLayout = QVBoxLayout()
 
-        self.SetUpCell()
+        # self.SetUpCell()
         self.SetUpBatteryPack()
 
         self.submit = QPushButton('Submit Parameters')
         self.submit.clicked.connect(self.submitParameter)
         self.BatteryPackLayout.addWidget(self.submit)
 
-        self.CellLayout.addStretch()
-        self.CellLayout.setSpacing(5)
+        # self.CellLayout.addStretch()
+        # self.CellLayout.setSpacing(5)
 
         self.BatteryPackLayout.addStretch()
         self.BatteryPackLayout.setSpacing(5)
 
-        MainLayout.addLayout(self.CellLayout)
+        # MainLayout.addLayout(self.CellLayout)
         MainLayout.addLayout(self.BatteryPackLayout)
         self.setLayout(MainLayout)
 
     def submitParameter(self):
         global T0
         global soc
-        if not(self.inputCellName.text() == ''):
-            file = open('Objects/SavedCells/Cells.csv', mode  = 'a', newline = '')
-            wrighter = csv.writer(file)
-            Cellrow = [self.inputCellName.text(),
-                            float(self.inputMass.text()), 
-                            float(self.inputResistance.text()), 
-                            float(self.inputK.text()), 
-                            float(self.inputAmpacity.text()), 
-                            float(self.inputMaxVoltage.text()), 
-                            float(self.inputMinVoltage.text()), 
-                            float(self.inputNomVoltage.text()),
-                            float(self.inputmCrate.text()),
-                            float(self.inputcCrate.text())]
-            wrighter.writerow(Cellrow)
-            file.close()
+        # if not(self.inputCellName.text() == ''):
+        #     file = open('Objects/SavedCells/Cells.csv', mode  = 'a', newline = '')
+        #     wrighter = csv.writer(file)
+        #     Cellrow = [self.inputCellName.text(),
+        #                     float(self.inputMass.text()), 
+        #                     float(self.inputResistance.text()), 
+        #                     float(self.inputK.text()), 
+        #                     float(self.inputAmpacity.text()), 
+        #                     float(self.inputMaxVoltage.text()), 
+        #                     float(self.inputMinVoltage.text()), 
+        #                     float(self.inputNomVoltage.text()),
+        #                     float(self.inputmCrate.text()),
+        #                     float(self.inputcCrate.text())]
+        #     wrighter.writerow(Cellrow)
+        #     file.close()
 
         if not(self.inputConfName.text() == ''):
             file = open('Objects/SavedBatteryPacks/BatteryPacks.csv', mode  = 'a', newline = '')
@@ -113,49 +116,49 @@ class Setup(QWidget):
         continuous = not(continuous)
         self.inputContControl.setText(str(continuous))
 
-    def SetUpCell(self):
-        self.CellLayout.addWidget(QLabel('Cell Specifics'))
-        self.CellLayout.addWidget(QLabel(' '))
+    # def SetUpCell(self):
+    #     self.CellLayout.addWidget(QLabel('Cell Specifics'))
+    #     self.CellLayout.addWidget(QLabel(' '))
 
-        self.CellLayout.addWidget(QLabel('Cell Name'))
-        self.inputCellName = QLineEdit()
-        self.CellLayout.addWidget(self.inputCellName)
+    #     self.CellLayout.addWidget(QLabel('Cell Name'))
+    #     self.inputCellName = QLineEdit()
+    #     self.CellLayout.addWidget(self.inputCellName)
 
-        self.CellLayout.addWidget(QLabel('Mass'))
-        self.inputMass = QLineEdit(str(cell.mass))
-        self.CellLayout.addWidget(self.inputMass)
+    #     self.CellLayout.addWidget(QLabel('Mass'))
+    #     self.inputMass = QLineEdit(str(cell.mass))
+    #     self.CellLayout.addWidget(self.inputMass)
 
-        self.CellLayout.addWidget(QLabel('Resistance'))
-        self.inputResistance = QLineEdit(str(cell.resistance))
-        self.CellLayout.addWidget(self.inputResistance)
+    #     self.CellLayout.addWidget(QLabel('Resistance'))
+    #     self.inputResistance = QLineEdit(str(cell.resistance))
+    #     self.CellLayout.addWidget(self.inputResistance)
 
-        self.CellLayout.addWidget(QLabel('K'))
-        self.inputK = QLineEdit(str(cell.K))
-        self.CellLayout.addWidget(self.inputK)
+    #     self.CellLayout.addWidget(QLabel('K'))
+    #     self.inputK = QLineEdit(str(cell.K))
+    #     self.CellLayout.addWidget(self.inputK)
 
-        self.CellLayout.addWidget(QLabel('Ampacity'))
-        self.inputAmpacity = QLineEdit(str(cell.ampacity))
-        self.CellLayout.addWidget(self.inputAmpacity)
+    #     self.CellLayout.addWidget(QLabel('Ampacity'))
+    #     self.inputAmpacity = QLineEdit(str(cell.ampacity))
+    #     self.CellLayout.addWidget(self.inputAmpacity)
 
-        self.CellLayout.addWidget(QLabel('Max Voltage'))
-        self.inputMaxVoltage = QLineEdit(str(cell.maxVoltage))
-        self.CellLayout.addWidget(self.inputMaxVoltage)
+    #     self.CellLayout.addWidget(QLabel('Max Voltage'))
+    #     self.inputMaxVoltage = QLineEdit(str(cell.maxVoltage))
+    #     self.CellLayout.addWidget(self.inputMaxVoltage)
 
-        self.CellLayout.addWidget(QLabel('Min Voltage'))
-        self.inputMinVoltage = QLineEdit(str(cell.minVoltage))
-        self.CellLayout.addWidget(self.inputMinVoltage)
+    #     self.CellLayout.addWidget(QLabel('Min Voltage'))
+    #     self.inputMinVoltage = QLineEdit(str(cell.minVoltage))
+    #     self.CellLayout.addWidget(self.inputMinVoltage)
 
-        self.CellLayout.addWidget(QLabel('Nominal Voltage'))
-        self.inputNomVoltage = QLineEdit(str(cell.nomVoltage))
-        self.CellLayout.addWidget(self.inputNomVoltage)
+    #     self.CellLayout.addWidget(QLabel('Nominal Voltage'))
+    #     self.inputNomVoltage = QLineEdit(str(cell.nomVoltage))
+    #     self.CellLayout.addWidget(self.inputNomVoltage)
 
-        self.CellLayout.addWidget(QLabel('max C rate discharge'))
-        self.inputmCrate= QLineEdit(str(cell.maxCrate))
-        self.CellLayout.addWidget(self.inputmCrate)
+    #     self.CellLayout.addWidget(QLabel('max C rate discharge'))
+    #     self.inputmCrate= QLineEdit(str(cell.maxCrate))
+    #     self.CellLayout.addWidget(self.inputmCrate)
 
-        self.CellLayout.addWidget(QLabel('continuous C rate discharge'))
-        self.inputcCrate= QLineEdit(str(cell.contCrate))
-        self.CellLayout.addWidget(self.inputcCrate)
+    #     self.CellLayout.addWidget(QLabel('continuous C rate discharge'))
+    #     self.inputcCrate= QLineEdit(str(cell.contCrate))
+    #     self.CellLayout.addWidget(self.inputcCrate)
 
 class GraphWindow(QWidget):
     def __init__(self, cellNames, confNames, cells, confs, filename):
@@ -389,8 +392,8 @@ class Window(QWidget):
     def __init__(self):
         super().__init__()
 
-        self.cellNames = []
-        self.cells = []
+        self.cellNames = ['Samsung50s']
+        self.cells = [samsung50s()]
 
         self.confNames = []
         self.confs = []
@@ -401,7 +404,7 @@ class Window(QWidget):
 
         self.ActionLayout = QHBoxLayout()
 
-        self.setNewCellConfig = QPushButton('Set up a new cell / BatteryPack')
+        self.setNewCellConfig = QPushButton('BatteryPack')
         self.setNewCellConfig.clicked.connect(self.SetCellConfig)
         self.TopLayout.addWidget(self.setNewCellConfig)
 
@@ -410,7 +413,7 @@ class Window(QWidget):
         self.InputFile.addItems(AvailibleFiles)
         self.TopLayout.addWidget(self.InputFile)
 
-        self.FindCells()
+        # self.FindCells()
         self.SelectedCell = QComboBox()
         self.SelectedCell.addItems(self.cellNames)
         self.TopLayout.addWidget(self.SelectedCell)
@@ -448,18 +451,18 @@ class Window(QWidget):
 
     def Refresh(self):
     
-        for i in range(len(self.cellNames)):
-            self.SelectedCell.removeItem(0)
+        # for i in range(len(self.cellNames)):
+        #     self.SelectedCell.removeItem(0)
         
         for i in range(len(self.confNames)):
             self.SelectedConfig.removeItem(0)
         
-        self.FindCells()
+        # self.FindCells()
         self.FindBatteryPacks()
 
         self.PkwhData = {}
 
-        self.SelectedCell.addItems(self.cellNames)
+        # self.SelectedCell.addItems(self.cellNames)
         self.SelectedConfig.addItems(self.confNames)
 
     def SetCellConfig(self):
@@ -475,7 +478,7 @@ class Window(QWidget):
 
     def FindDriverProfiles(self):
         files = []
-        for entry in scandir('DriverProfiles'):
+        for entry in scandir('DBM/DriverProfiles'):
             if entry.is_file():
                 name = entry.name
                 t = name.split('.')
@@ -485,28 +488,28 @@ class Window(QWidget):
         
         return files
     
-    def FindCells(self):
+    # def FindCells(self):
         
-        file = open('Objects/SavedCells/Cells.csv', mode = 'r')
-        reader = csv.DictReader(file)
-        self.cellNames = []
-        self.cells = []
+    #     file = open('Objects/SavedCells/Cells.csv', mode = 'r')
+    #     reader = csv.DictReader(file)
+    #     self.cellNames = []
+    #     self.cells = []
 
-        for row in reader:
-            self.cellNames.append(str(row['name']))
-            self.cells.append(Cell(float(row['mass']),
-                                    float(row['resistance']), 
-                                    float(row['k']), 
-                                    float(row['ampacity']), 
-                                    float(row['maxVoltage']), 
-                                    float(row['minVoltage']), 
-                                    float(row['nomVoltage']), 
-                                    float(row['maxCrate']),
-                                    float(row['contCrate'])))
+    #     for row in reader:
+    #         self.cellNames.append(str(row['name']))
+    #         self.cells.append(Cell(float(row['mass']),
+    #                                 float(row['resistance']), 
+    #                                 float(row['k']), 
+    #                                 float(row['ampacity']), 
+    #                                 float(row['maxVoltage']), 
+    #                                 float(row['minVoltage']), 
+    #                                 float(row['nomVoltage']), 
+    #                                 float(row['maxCrate']),
+    #                                 float(row['contCrate'])))
 
     def FindBatteryPacks(self):
         
-        file = open('Objects/SavedBatteryPacks/BatteryPacks.csv', mode = 'r')
+        file = open('DBM/Objects/SavedBatteryPacks/BatteryPacks.csv', mode = 'r')
         reader = csv.DictReader(file)
         self.confNames = []
         self.confs = []

@@ -3,7 +3,7 @@ import math
 
 def ThermalProfile(T0, batteryPack, cont, stateOfCharge, fileName, title):
 
-    file = open('DriverProfiles/' + fileName, mode = 'r')
+    file = open('DBM/DriverProfiles/' + fileName, mode = 'r')
     reader = csv.DictReader(file)
 
     t = 0.0
@@ -12,8 +12,9 @@ def ThermalProfile(T0, batteryPack, cont, stateOfCharge, fileName, title):
     totalLoss = 0
     soc = stateOfCharge
     wh = 0.01 * (100 - soc) * batteryPack.Capacity
+    # print(wh)
     V = batteryPack.CurrentVoltage(wh)
-    
+    # print(V)
     keys = []
 
     for key in reader.fieldnames:
@@ -51,7 +52,7 @@ def ThermalProfile(T0, batteryPack, cont, stateOfCharge, fileName, title):
             P = (float(row['kW']) * 1000)  # Power in watts
             R = batteryPack.CurrentResistance(wh)  # Current internal resistance
             Voc = batteryPack.CurrentVoltage(wh)  # Open-circuit voltage
-            
+            # print(P)
             # Calculate current if power is nonzero
             if P != 0:
                 # P = (Voc - IR - V_lag)I
@@ -72,7 +73,7 @@ def ThermalProfile(T0, batteryPack, cont, stateOfCharge, fileName, title):
 
             # Update the lag voltage using the RC dynamics
             V_lag += dt * (-V_lag + R * I)
-
+            
             # Calculate terminal voltage
             Vdrop = R * I + V_lag
             V = Voc - Vdrop
@@ -82,15 +83,17 @@ def ThermalProfile(T0, batteryPack, cont, stateOfCharge, fileName, title):
             loss = Vdrop * I
             totalLoss += loss / 36000
             T += ((loss / 10) / (batteryPack.cellMass * batteryPack.cellK))
-            
+            # print(V)
             if V <= batteryPack.minVoltage:
                 end = True
+                
                 data['break'] = 'Dropped below minimum Voltage'
                 break
             if T >= 60:
                 end = True
                 data['break'] = 'Over heated above 60 degrees'
                 break
+            
             if V >= batteryPack.maxVoltage * 1.05:
                 end = True
                 data['break'] = 'Reached maximum Voltage'
@@ -112,7 +115,7 @@ def ThermalProfile(T0, batteryPack, cont, stateOfCharge, fileName, title):
                         realtemps.append((float(row[key]) - 32) * 5 / 9)
                 data['real average Temp (°C)'].append(sum(realtemps) / len(realtemps))
 
-
+            
             data['Voltage (V)'].append(V)
             data['Open Circuit Voltage (V)'].append(Voc)
             data['Temperature (°C)'].append(T)
@@ -127,7 +130,7 @@ def ThermalProfile(T0, batteryPack, cont, stateOfCharge, fileName, title):
         laps += 1
         if not(end) and (cont):          
             file.close()
-            file = open('DriverProfiles/' + fileName, mode = 'r')
+            file = open('DBM/DriverProfiles/' + fileName, mode = 'r')
             reader = csv.DictReader(file)
         else:
             break

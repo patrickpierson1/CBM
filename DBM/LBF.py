@@ -32,7 +32,7 @@ def getData(fileName):
             data = line.split(';')
             t.append(float(data[0]))
             V.append(float(data[1]))
-            R.append(float(data[2]) - CO)
+            R.append((float(data[2]) - CO) / 1000)
     return t, V, R
 
 def graphV(wh, V):
@@ -100,7 +100,7 @@ def main():
     t, V, R = getData(fileName)
     I = 3
     wh = convertToWh(t, V, I)
-    graphV(np.array(wh), np.array(V))
+    # graphV(np.array(wh), np.array(V))
     graphR(np.array(wh), np.array(R))
 
 main()

@@ -1,37 +1,39 @@
 
-class Cell:
-    def __init__(self, mass, resistance, k, ampacity, maxVoltage, minVoltage, nomVoltage, maxCrate, contCrate):
+class samsung50s:
+    def __init__(self):
 
-        self.mass = mass # kg
-        self.resistance = resistance # Ohms
-        self.K = k # Specific heat: J/(kg T)
-        self.ampacity = ampacity # ah
-        self.maxCrate = maxCrate
-        self.contCrate = contCrate
+        self.mass = 0.07 # kg
+        self.resistance = 0.013 # Ohms
+        self.K = 830 # Specific heat: J/(kg T)
+        self.ampacity = 5.22 # ah
+        self.maxCrate = 9
+        self.contCrate = 5
 
-        self.maxVoltage = maxVoltage
-        self.minVoltage = minVoltage
-        self.nomVoltage = nomVoltage 
+        self.maxVoltage = 4.2
+        self.minVoltage = 2.5
+        self.nomVoltage = 3.6 
         # self.setCapacity()
         self.capacity = self.nomVoltage * self.ampacity
+        
+        
         
     # def setCapacity(self):
     #     self.capacity = quad(self.Vah, 0, self.ampacity)[0]
 
     # V(wh) = i wh^3 + j wh^2 + kwh + d
-    def V(self, wh):
-        d = self.maxVoltage
-        c = self.c(self.capacity)
-        b = self.b(self.capacity)
-        a = self.a(self.capacity)
-        return ((a * (wh ** 3))
-                + (b * (wh **2))
-                + (c * (wh))
-                + (d))
     
+    def V(self, wh):
+        return ((-0.0005765195243976844*(wh**3)) +
+                (0.011583831124273847*(wh**2)) -
+                (0.10283815053158879*(wh)) +
+                (4.199404493564835))
     # constant resistance
     def R(self, wh):
-        return self.resistance 
+        return ((6.003454079908092e-07*(wh**4)) -
+                (2.2788963597369644e-05*(wh**3)) +
+                (0.0003014188006422359)*(wh**2) -
+                (0.0016783757827011977*(wh)) + 
+                (0.013695419182316364))
     
     # V(ah) = a ah^3 + b ah^2 + c ah + d
     def Vah(self, ah):

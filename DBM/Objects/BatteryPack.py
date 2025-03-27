@@ -22,4 +22,5 @@ class BatteryPack:
         return (self.Cell.R(wh / (self.Series * self.Parallel)) * self.Series / self.Parallel) + self.RConnections
     
     def CurrentVoltage(self, wh):
+        # print(self.Cell.V(wh / (self.Series * self.Parallel)))
         return self.Series * self.Cell.V((wh / (self.Series * self.Parallel)))
