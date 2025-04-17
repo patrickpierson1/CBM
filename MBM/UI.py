@@ -49,7 +49,7 @@ class Setup(QWidget):
         global T0
         global soc
         if not(self.inputCellName.text() == ''):
-            file = open('Objects/SavedCells/Cells.csv', mode  = 'a', newline = '')
+            file = open('MBM\Objects\SavedCells\Cells.csv', mode  = 'a', newline = '')
             wrighter = csv.writer(file)
             Cellrow = [self.inputCellName.text(),
                             float(self.inputMass.text()), 
@@ -65,7 +65,7 @@ class Setup(QWidget):
             file.close()
 
         if not(self.inputConfName.text() == ''):
-            file = open('Objects/SavedBatteryPacks/BatteryPacks.csv', mode  = 'a', newline = '')
+            file = open('MBM\Objects\SavedBatteryPacks\BatteryPacks.csv', mode  = 'a', newline = '')
             wrighter = csv.writer(file)
             Confrow = [self.inputConfName.text(),
                     float(self.inputSeries.text()),

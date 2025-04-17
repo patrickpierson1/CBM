@@ -48,7 +48,7 @@ def ThermalProfile(T0, batteryPack, cont, stateOfCharge, fileName, title):
 
         for row in reader:
             t += dt
-            P = (float(row['kW']) * 1000)  # Power in watts
+            P = abs((float(row['kW']) * 1000))  # Power in watts
             R = batteryPack.CurrentResistance(wh)  # Current internal resistance
             Voc = batteryPack.CurrentVoltage(wh)  # Open-circuit voltage
             
