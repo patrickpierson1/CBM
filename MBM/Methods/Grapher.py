@@ -18,7 +18,7 @@ def GraphTP(data, selected, showData):
         curText = (key + '\n' +
                 'end Voltage: ' + str(round(data[key]['Voltage (V)'][-1], 2)) + '\n' +
                 'kWh used: ' + str(round(data[key]['Wh used'] / 1000, 2)) + '\n' +
-                'Wh loss: ' + str(round(sum(data[key]['Losses (W)']) / 3600, 2)) + '\n' +
+                'Wh loss: ' + str(round(sum(data[key]['Losses (W)']) / 36000, 2)) + '\n' +
                 'minutes: ' + str(round(data[key]['time (s)'][-1] / 60, 2)) + '\n' +
                 'laps: ' + str(data[key]['laps']) + '\n' +
                 'end Temp ' + str(round(data[key]['Temperature (°C)'][-1], 2)) + '\n' +

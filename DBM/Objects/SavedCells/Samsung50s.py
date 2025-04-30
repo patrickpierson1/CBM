@@ -1,3 +1,4 @@
+import matplotlib.pyplot as plt
 
 class samsung50s:
     def __init__(self):
@@ -36,14 +37,14 @@ class samsung50s:
                 (0.013695419182316364))
     
     # V(ah) = a ah^3 + b ah^2 + c ah + d
-    def Vah(self, ah):
+    def Vwh(self, wh):
         d = self.maxVoltage
-        c = self.c(self.ampacity)
-        b = self.b(self.ampacity)
-        a = self.a(self.ampacity)
-        return ((a * (ah ** 3))
-                + (b * (ah ** 2))
-                + (c * (ah))
+        c = self.c(self.capacity)
+        b = self.b(self.capacity)
+        a = self.a(self.capacity)
+        return ((a * (wh ** 3))
+                + (b * (wh ** 2))
+                + (c * (wh))
                 + (d))
 
     # coeficient equations
@@ -59,3 +60,40 @@ class samsung50s:
         return (-6 / (m ** 3)) * ((2 * self.nomVoltage) 
                                               - self.maxVoltage 
                                               - self.minVoltage)
+    
+# cell = samsung50s()
+# ax = plt.gca()
+# ax.xaxis.set_tick_params(width=2)  # Thicker x-axis ticks
+# ax.yaxis.set_tick_params(width=2)  # Thicker y-axis ticks
+# # ax.invert_xaxis()
+# ax.grid(linewidth=1)
+
+# Vd = []
+# Vm = []
+# soc = []
+# R = []
+# r = []
+# for i in range(0, int(cell.capacity) * 100 + 100):
+#     wh = i / 100
+#     if (cell.V(wh) > cell.minVoltage):
+#         Vd.append(cell.V(wh))
+#         R.append(cell.R(wh) * 1000)
+#         r.append(14)
+#     if (cell.Vwh(wh) > cell.minVoltage):
+#         Vm.append(cell.Vwh(wh))
+    
+#     soc.append(wh)
+ 
+
+# # plt.plot(soc[0:len(Vd)], Vd, label='Test Data Voltage', color='blue', linewidth=2)  # Adjust color and width as needed
+# # plt.plot(soc[0:len(Vm)], Vm, label='Calculated Voltage', color='orange', linewidth=2)  # Adjust color and width as needed
+# plt.plot(soc[0:len(Vd)], R, label='Measured Resistance', color='blue', linewidth=2)  # Adjust color and width as needed
+# plt.plot(soc[0:len(r)], r, label='Datasheet Resistance', color='orange', linewidth=2, linestyle = 'dashed')  # Adjust color and width as needed
+
+# plt.legend(loc='upper right', fontsize=10)  # Adjust legend font size
+
+# # plt.axhline(y=cell.minVoltage, color='red', linestyle = 'dashed', label = 'Minimum voltage')  # Adjust y, color, style, and width as needed
+# # plt.axvline(x=100, color='black', linewidth=2)  # Adjust y, color, style, and width as needed
+# plt.ylabel('mili-ohms')
+# plt.xlabel('watt-hours consumed')
+# plt.show()

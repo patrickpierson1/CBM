@@ -57,3 +57,4 @@ class Cell:
         return (-6 / (m ** 3)) * ((2 * self.nomVoltage) 
                                               - self.maxVoltage 
                                               - self.minVoltage)
+    

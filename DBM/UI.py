@@ -407,7 +407,7 @@ class Window(QWidget):
 
     def FindDriverProfiles(self):
         files = []
-        for entry in scandir('DriverProfiles'):
+        for entry in scandir('CBM\DriverProfiles'):
             if entry.is_file():
                 name = entry.name
                 t = name.split('.')
@@ -419,7 +419,7 @@ class Window(QWidget):
     
     def FindBatteryPacks(self):
         
-        file = open('DBM/Objects/SavedBatteryPacks/BatteryPacks.csv', mode = 'r')
+        file = open('CBM\MBM\Objects\SavedBatteryPacks\BatteryPacks.csv', mode = 'r')
         reader = csv.DictReader(file)
         self.confNames = []
         self.confs = []
