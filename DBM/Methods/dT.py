@@ -3,7 +3,7 @@ import math
 
 def ThermalProfile(T0, batteryPack, cont, stateOfCharge, fileName, title):
 
-    file = open('CBM/DriverProfiles/' + fileName, mode = 'r')
+    file = open('DriverProfiles/' + fileName, mode = 'r')
     reader = csv.DictReader(file)
 
     t = 0.0
@@ -39,6 +39,9 @@ def ThermalProfile(T0, batteryPack, cont, stateOfCharge, fileName, title):
 
     if keys.__contains__('V'):
         data['real Voltage (V)'] = []
+
+    if keys.__contains__('I'):
+        data['real Current (A)'] = []
 
     end = False
 
@@ -107,12 +110,16 @@ def ThermalProfile(T0, batteryPack, cont, stateOfCharge, fileName, title):
             if keys.__contains__('V'):
                 rV = float(row['V'])
                 data['real Voltage (V)'].append(rV)
+            
+            if keys.__contains__('I'):
+                rI = float(row['I'])
+                data['real Current (A)'].append(rI)
 
             if keys.__contains__('t1'):
                 realtemps = []
                 for key in keys:
                     if key.__contains__('t'):
-                        realtemps.append((float(row[key]) - 32) * 5 / 9)
+                        realtemps.append(float(row[key]))
                 data['real average Temp (°C)'].append(sum(realtemps) / len(realtemps))
 
             
@@ -130,7 +137,7 @@ def ThermalProfile(T0, batteryPack, cont, stateOfCharge, fileName, title):
         laps += 1
         if not(end) and (cont):          
             file.close()
-            file = open('CDM/DriverProfiles/' + fileName, mode = 'r')
+            file = open('DriverProfiles/' + fileName, mode = 'r')
             reader = csv.DictReader(file)
         else:
             break

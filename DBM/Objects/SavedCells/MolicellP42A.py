@@ -83,15 +83,15 @@ for i in range(0, int(cell.capacity) * 100 + 100):
     soc.append(wh)
  
 
-plt.plot(soc[0:len(Vd)], Vd, label='Test Data Voltage', color='blue', linewidth=2)  # Adjust color and width as needed
-plt.plot(soc[0:len(Vm)], Vm, label='Calculated Voltage', color='orange', linewidth=2)  # Adjust color and width as needed
-# plt.plot(soc[0:len(Vd)], R, label='Measured Resistance', color='blue', linewidth=2)  # Adjust color and width as needed
-# plt.plot(soc[0:len(r)], r, label='Datasheet Resistance', color='orange', linewidth=2, linestyle = 'dashed')  # Adjust color and width as needed
+# plt.plot(soc[0:len(Vd)], Vd, label='Test Data Voltage', color='blue', linewidth=2)  # Adjust color and width as needed
+# plt.plot(soc[0:len(Vm)], Vm, label='Calculated Voltage', color='orange', linewidth=2)  # Adjust color and width as needed
+# # plt.plot(soc[0:len(Vd)], R, label='Measured Resistance', color='blue', linewidth=2)  # Adjust color and width as needed
+# # plt.plot(soc[0:len(r)], r, label='Datasheet Resistance', color='orange', linewidth=2, linestyle = 'dashed')  # Adjust color and width as needed
 
-plt.legend(loc='upper right', fontsize=10)  # Adjust legend font size
+# plt.legend(loc='upper right', fontsize=10)  # Adjust legend font size
 
-# plt.axhline(y=cell.minVoltage, color='red', linestyle = 'dashed', label = 'Minimum voltage')  # Adjust y, color, style, and width as needed
-# plt.axvline(x=100, color='black', linewidth=2)  # Adjust y, color, style, and width as needed
-plt.ylabel('mili-ohms')
-plt.xlabel('watt-hours consumed')
-plt.show()
+# # plt.axhline(y=cell.minVoltage, color='red', linestyle = 'dashed', label = 'Minimum voltage')  # Adjust y, color, style, and width as needed
+# # plt.axvline(x=100, color='black', linewidth=2)  # Adjust y, color, style, and width as needed
+# plt.ylabel('mili-ohms')
+# plt.xlabel('watt-hours consumed')
+# plt.show()

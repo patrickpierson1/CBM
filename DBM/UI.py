@@ -6,6 +6,7 @@ import csv
 from Objects.BatteryPack import BatteryPack
 from Objects.SavedCells.Samsung50s import samsung50s
 from Objects.SavedCells.MolicellP42A import molicellP42A
+from Objects.SavedCells.Melasta14Ah import melasta14Ah
 from Methods.dT import ThermalProfile
 from Methods.Vsoc import Vsoc
 from Methods.MaxPkwh import MaxPkw
@@ -327,8 +328,8 @@ class Window(QWidget):
     def __init__(self):
         super().__init__()
 
-        self.cellNames = ['Samsung50s', 'MolicellP42A']
-        self.cells = [samsung50s(), molicellP42A()]
+        self.cellNames = ['Melasta14Ah', 'Samsung50s', 'MolicellP42A']
+        self.cells = [melasta14Ah(), samsung50s(), molicellP42A()]
 
         self.confNames = []
         self.confs = []
@@ -407,7 +408,7 @@ class Window(QWidget):
 
     def FindDriverProfiles(self):
         files = []
-        for entry in scandir('CBM\DriverProfiles'):
+        for entry in scandir('DriverProfiles'):
             if entry.is_file():
                 name = entry.name
                 t = name.split('.')
@@ -419,7 +420,7 @@ class Window(QWidget):
     
     def FindBatteryPacks(self):
         
-        file = open('CBM\MBM\Objects\SavedBatteryPacks\BatteryPacks.csv', mode = 'r')
+        file = open('MBM\Objects\SavedBatteryPacks\BatteryPacks.csv', mode = 'r')
         reader = csv.DictReader(file)
         self.confNames = []
         self.confs = []

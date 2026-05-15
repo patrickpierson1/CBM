@@ -1,9 +1,9 @@
 
 
 filename = "DriverProfiles/EnduranceLap.csv"
-destination = "DriverProfiles/Endurance_scaled.csv"
+destination = "DriverProfiles/Autocross_scaled.csv"
 
-scale = 3
+scale = 6.5
 
 source = open(filename, "r")
 destination = open(destination, "w")
