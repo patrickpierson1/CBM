@@ -90,15 +90,17 @@ class melasta14Ah:
 # print(soc[len(Vd) - 1])
 # print(sum(Vd) / len(Vd))
 # print(sum(R) / len(R))
-# # plt.plot(soc[0:len(Vd)], Vd, label='Test Data Voltage', color='blue', linewidth=2)  # Adjust color and width as needed
-# # plt.plot(soc[0:len(Vm)], Vm, label='Calculated Voltage', color='orange', linewidth=2)  # Adjust color and width as needed
-# plt.plot(soc[0:len(Vd)], R, label='Measured Resistance', color='blue', linewidth=2)  # Adjust color and width as needed
-# plt.plot(soc[0:len(r)], r, label='Datasheet Resistance', color='orange', linewidth=2, linestyle = 'dashed')  # Adjust color and width as needed
+# plt.plot(soc[0:len(Vd)], Vd, label='Tested Voltage', color='blue', linewidth=2)  # Adjust color and width as needed
+# plt.plot(soc[0:len(Vm)], Vm, label='Simulated Voltage', color='orange', linewidth=2)  # Adjust color and width as needed
+# # plt.plot(soc[0:len(Vd)], R, label='tested Resistance', color='blue', linewidth=2)  # Adjust color and width as needed
+# # plt.plot(soc[0:len(r)], r, label='Datasheet Resistance', color='orange', linewidth=2, linestyle = 'dashed')  # Adjust color and width as needed
 
 # plt.legend(loc='upper right', fontsize=10)  # Adjust legend font size
 
 # # plt.axhline(y=cell.minVoltage, color='red', linestyle = 'dashed', label = 'Minimum voltage')  # Adjust y, color, style, and width as needed
 # # plt.axvline(x=100, color='black', linewidth=2)  # Adjust y, color, style, and width as needed
-# plt.ylabel('mili ohms')
-# plt.xlabel('watt-hours consumed')
+# plt.ylabel('Resistance (mOhm)')
+# plt.xlabel('Energy Consumed (Wh)')
+# plt.title('Melasta 14ah - Simulated Voltage vs Tested Voltage')
+# # plt.title('Melasta 14ah - Datasheet Resistance vs Tested Resistance')
 # plt.show()
